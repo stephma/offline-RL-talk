@@ -1,0 +1,97 @@
+\section{Product Motivation}
+
+\begin{frame}{Predictions are not decisions}
+  \centering
+  \begin{tabular}{p{0.43\textwidth}p{0.43\textwidth}}
+    \toprule
+    \textbf{Supervised learning predicts} & \textbf{RL chooses} \\
+    \midrule
+    Truck arrival time & Which truck to unload next \\
+    Unloading duration & Which pit to assign \\
+    Grain quality & Which silo to route into \\
+    Train delay & How to schedule train loading \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.5cm}
+  \takeaway{Supervised learning predicts what happens next. Reinforcement learning chooses what should happen next.}
+  \note{Open with the grain terminal. Prediction is useful, but the product tension starts when the system must choose an action that changes the operation.}
+\end{frame}
+
+\begin{frame}{Actions change the future}
+  \centering
+  \begin{tikzpicture}[node distance=0.55cm,>=Latex,scale=0.94,transform shape]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.0cm,minimum height=0.8cm] (queue) {truck queue};
+    \node[draw,rounded corners,fill=Panel,right=of queue,minimum width=2.0cm,minimum height=0.8cm] (pit) {unloading pit};
+    \node[draw,rounded corners,fill=Panel,right=of pit,minimum width=2.1cm,minimum height=0.8cm] (route) {conveyor route};
+    \node[draw,rounded corners,fill=Panel,right=of route,minimum width=2.0cm,minimum height=0.8cm] (silo) {silo / blend};
+    \node[draw,rounded corners,fill=Panel,right=of silo,minimum width=2.0cm,minimum height=0.8cm] (train) {train loading};
+    \draw[->,thick] (queue) -- (pit);
+    \draw[->,thick] (pit) -- (route);
+    \draw[->,thick] (route) -- (silo);
+    \draw[->,thick] (silo) -- (train);
+    \draw[->,thick,SignalGreen,bend left=35] (train.north) to node[above]{new state} (queue.north);
+  \end{tikzpicture}
+
+  \vspace{0.45cm}
+  Choosing a truck, pit, route, or silo changes future queues, storage, blending options, and train schedules.
+
+  \vspace{0.25cm}
+  \productbox{In RL, the model does not just observe the data distribution. It helps create the next data distribution.}
+  \note{This is the main conceptual gap. Supervised learning assumes a fixed data distribution; a policy changes the states it will see next.}
+\end{frame}
+
+\begin{frame}{Why imitation can fail}
+  \Large
+  A behavior-cloned operator policy may be 99\% accurate at each decision.
+
+  \vspace{0.4cm}
+  \centering
+  \begin{tikzpicture}[node distance=0.45cm,>=Latex,scale=0.9,transform shape]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.0cm] (wrong) {wrong silo};
+    \node[draw,rounded corners,fill=Panel,right=of wrong,minimum width=2.0cm] (blend) {bad blend};
+    \node[draw,rounded corners,fill=Panel,right=of blend,minimum width=2.2cm] (handle) {rehandling};
+    \node[draw,rounded corners,fill=Panel,right=of handle,minimum width=2.2cm] (cong) {congestion};
+    \node[draw,rounded corners,fill=Panel,right=of cong,minimum width=2.0cm] (delay) {train delay};
+    \draw[->,thick] (wrong) -- (blend);
+    \draw[->,thick] (blend) -- (handle);
+    \draw[->,thick] (handle) -- (cong);
+    \draw[->,thick] (cong) -- (delay);
+  \end{tikzpicture}
+
+  \vspace{0.45cm}
+  \takeaway{A policy that is locally accurate can still be globally unsafe because it controls its own future inputs.}
+  \note{Introduce behavior cloning intuitively before the formal BC section. One small action error can push the terminal into a state not well represented in the logs, where more errors become likely.}
+\end{frame}
+
+\begin{frame}{Why RL needs more than logs}
+  \centering
+  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=3.3cm,minimum height=0.9cm] (sim) {simulator available};
+    \node[draw,rounded corners,fill=Panel,right=2.0cm of sim,minimum width=3.3cm,minimum height=0.9cm] (logs) {logs only};
+    \node[below=0.35cm of sim,text width=3.5cm,align=center] {try novel actions\\estimate consequences};
+    \node[below=0.35cm of logs,text width=3.5cm,align=center] {improve cautiously\\stay near support};
+    \draw[->,thick,SignalGreen] (sim.south) -- ++(0,-0.6);
+    \draw[->,thick,SignalGreen] (logs.south) -- ++(0,-0.6);
+  \end{tikzpicture}
+
+  \vspace{1.0cm}
+  \takeaway{RL is about policy improvement, not just action prediction.}
+  \note{This sets up the later offline RL material. If we have a simulator, RL can evaluate counterfactual actions. If we only have logs, offline RL must improve while respecting dataset support.}
+\end{frame}
+
+\begin{frame}{The RL question}
+  \Large
+  Given logged grain-terminal decisions and delayed outcomes, can we learn a better policy without risky online experimentation?
+
+  \vspace{0.6cm}
+  \normalsize
+  Logged data:
+  \[
+    \text{queue state, pit assignment, routing, silo choice, reward / KPI, next state}
+  \]
+
+  \vspace{0.2cm}
+  \productbox{This is the bridge from product operations to the control and RL formalism.}
+  \note{Use this as the transition into the control-theory section. We now have states, actions, transitions, costs or rewards, and a policy to improve.}
+\end{frame}

@@ -1,0 +1,20 @@
+\begin{frame}[plain,noframenumbering]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[DeepNavy] (current page.south west) rectangle (current page.north east);
+    \begin{scope}[shift={(current page.south west)}]
+      \fill[SignalGreen] (0,0) rectangle (0.18,9);
+      \fill[WarmGold] (0.18,0) rectangle (0.25,9);
+    \end{scope}
+  \end{tikzpicture}
+
+  \vspace*{1.0cm}
+  {\color{white}\Huge\bfseries\inserttitle\par}
+  \vspace{0.3cm}
+  {\color{SoftGray}\Large\insertsubtitle\par}
+
+  \vfill
+  {\color{SignalGreen}\insertauthor}
+  \hspace{0.6cm}
+  {\color{SoftGray!75}\insertdate}
+  \note{Open with the thesis: RL is data-driven optimal control. Offline RL is the product-relevant version when interaction is expensive, risky, slow, or constrained.}
+\end{frame}

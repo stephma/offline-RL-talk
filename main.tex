@@ -1,66 +1,74 @@
 \documentclass[aspectratio=169]{beamer}
 
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
 \usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit}
+
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeameroption{hide notes}
 
 \definecolor{DeepNavy}{HTML}{0B1320}
-\definecolor{SignalGreen}{HTML}{22C55E}
-\definecolor{WarmGold}{HTML}{F4B942}
-\definecolor{SoftGray}{HTML}{E5E7EB}
+\definecolor{SignalGreen}{HTML}{16A34A}
+\definecolor{WarmGold}{HTML}{D97706}
+\definecolor{SoftGray}{HTML}{F3F4F6}
+\definecolor{Ink}{HTML}{111827}
+\definecolor{Muted}{HTML}{4B5563}
+\definecolor{Panel}{HTML}{EEF2F7}
 
-\setbeamertemplate{navigation symbols}{}
-\setbeamercolor{normal text}{fg=SoftGray,bg=DeepNavy}
+\setbeamercolor{title}{fg=DeepNavy}
+\setbeamercolor{frametitle}{fg=DeepNavy}
+\setbeamercolor{normal text}{fg=Ink,bg=white}
+\setbeamercolor{structure}{fg=SignalGreen}
+\setbeamercolor{block title}{fg=white,bg=DeepNavy}
+\setbeamercolor{block body}{fg=Ink,bg=Panel}
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
 
-\title{Deep Reinforcement Learning}
-\subtitle{From Value Functions to Offline Decision Making}
-\author{Stephan}
-\institute{Offline RL Talk}
+\newcommand{\productbox}[1]{%
+  \begin{block}{Product relevance}
+    #1
+  \end{block}
+}
+
+\newcommand{\takeaway}[1]{%
+  \begin{block}{Business takeaway}
+    #1
+  \end{block}
+}
+
+\newcommand{\dataset}{\mathcal D}
+\newcommand{\states}{\mathcal S}
+\newcommand{\actions}{\mathcal A}
+
+\title{From Control to Offline Reinforcement Learning}
+\subtitle{Learning Better Decisions from Logged Data}
+\author{Stephan Mandt}
+\institute{}
 \date{\today}
 
 \begin{document}
 
-\begin{frame}[plain,noframenumbering]
-  \begin{tikzpicture}[remember picture,overlay]
-    \fill[DeepNavy] (current page.south west) rectangle (current page.north east);
+\include{sections/00_title}
+\include{sections/01_motivation}
+\include{sections/03_mdp_value_functions}
+\include{sections/02_control_to_rl}
+\include{sections/04_online_and_model_based_rl}
+\include{sections/05_offline_rl}
+\include{sections/06_bc_awr}
+\include{sections/07_iql_idql}
+\include{sections/08_product_checklist}
 
-    \begin{scope}[shift={(current page.south west)}]
-      \foreach \x/\y/\r in {
-        1.9/6.5/1.5pt,
-        3.2/4.7/1.2pt,
-        4.8/6.1/1.8pt,
-        7.0/4.2/1.3pt,
-        9.1/5.7/1.7pt,
-        11.3/3.8/1.2pt,
-        13.1/5.5/1.6pt,
-        14.6/3.4/1.1pt
-      } {
-        \fill[SignalGreen] (\x,\y) circle (\r);
-      }
-
-      \draw[SignalGreen!40,line width=0.6pt]
-        (1.9,6.5) -- (4.8,6.1) -- (9.1,5.7) -- (13.1,5.5);
-
-      \draw[WarmGold!55,line width=0.6pt]
-        (3.2,4.7) -- (7.0,4.2) -- (11.3,3.8) -- (14.6,3.4);
-
-      \fill[SignalGreen] (0,0) rectangle (0.18,9);
-      \fill[WarmGold] (0.18,0) rectangle (0.25,9);
-    \end{scope}
-  \end{tikzpicture}
-
-  \vspace*{1.3cm}
-  {\usebeamerfont{title}\Huge\bfseries\inserttitle\par}
-  \vspace{0.35cm}
-  {\Large\color{SoftGray!85}\insertsubtitle\par}
-
-  \vfill
-
-  {\fontsize{11}{14}\selectfont
-    \textcolor{SignalGreen}{\insertauthor}
-    \hspace{0.8cm}
-    \textcolor{SoftGray!70}{\insertinstitute}
-    \hspace{0.8cm}
-    \textcolor{SoftGray!70}{\insertdate}
-  \par}
+\begin{frame}{References}
+  \tiny
+  \nocite{*}
+  \bibliographystyle{plain}
+  \bibliography{refs}
+  \note{Use this slide only if asked for sources. The main talk should cite the relevant papers in place and keep the narrative moving.}
 \end{frame}
 
 \end{document}

@@ -1,0 +1,75 @@
+\section{MDPs and Value Functions}
+
+\begin{frame}{The minimal RL formalism}
+  \Large
+  A Markov Decision Process:
+  \[
+    (\states,\actions,P,r,\gamma)
+  \]
+
+  \vspace{0.2cm}
+  \normalsize
+  \begin{itemize}
+    \item $s \in \states$: state
+    \item $a \in \actions$: action
+    \item $P(s' \mid s,a)$: transition
+    \item $r(s,a)$: reward
+    \item $\gamma \in [0,1)$: discount
+  \end{itemize}
+  \note{Introduce vocabulary only. The key assumption is Markovian state: the state contains enough information to make the next decision.}
+\end{frame}
+
+\begin{frame}{Agent-environment loop}
+  \centering
+  \begin{tikzpicture}[node distance=1.4cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=3cm,minimum height=1cm] (agent) {agent / policy $\pi$};
+    \node[draw,rounded corners,fill=Panel,right=3.2cm of agent,minimum width=3cm,minimum height=1cm] (env) {environment};
+    \draw[->,thick] (agent) -- node[above] {$a_t$} (env);
+    \draw[->,thick] (env.south) -- ++(0,-1.0) -| node[pos=0.25,below] {$s_{t+1}, r_t$} (agent.south);
+  \end{tikzpicture}
+
+  \vspace{0.7cm}
+  \productbox{In products, the ``environment'' may be customers, infrastructure, markets, robots, or agents.}
+  \note{This diagram clarifies the closed loop. The policy changes the data distribution by choosing actions.}
+\end{frame}
+
+\begin{frame}{Return and discounting}
+  \Large
+  The return is cumulative future reward:
+
+  \[
+    G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k}
+  \]
+
+  \vspace{0.4cm}
+  \normalsize
+  A policy is good if its actions lead to high long-term return, not merely good immediate outcomes.
+  \note{Emphasize delayed consequences again. Discounting is a practical way to trade off immediate and future rewards.}
+\end{frame}
+
+\begin{frame}{$V$, $Q$, and advantage}
+  \begin{align*}
+    V^\pi(s) &= \text{value of state }s\text{ under policy }\pi \\
+    Q^\pi(s,a) &= \text{value of taking }a\text{ in }s\text{, then following }\pi \\
+    A^\pi(s,a) &= Q^\pi(s,a) - V^\pi(s)
+  \end{align*}
+
+  \vspace{0.3cm}
+  \takeaway{Advantage asks: was this action better or worse than the policy's usual action in the same state?}
+  \note{Advantage is the bridge to AWR, IQL, and IDQL. Make sure this concept lands.}
+\end{frame}
+
+\begin{frame}{Bellman thinking}
+  \Large
+  \[
+    Q(s,a) \approx r(s,a) + \gamma V(s')
+  \]
+
+  \vspace{0.4cm}
+  \normalsize
+  The value of an action is immediate reward plus the value of where it takes us.
+
+  \vspace{0.4cm}
+  \productbox{Bellman recursion is the RL version of cost-to-go recursion in optimal control.}
+  \note{Connect explicitly back to dynamic programming. This equation is the skeleton underneath most of the algorithms later.}
+\end{frame}

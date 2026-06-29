@@ -1,0 +1,140 @@
+\section{IQL and IDQL}
+
+\begin{frame}{IQL critic learning}
+  \Large
+  Avoid explicit maximization over unseen actions:
+  \[
+    \text{avoid: } \max_a Q(s,a)
+  \]
+
+  \normalsize
+  \Large
+  Dataset transition update:
+  \[
+    Q(s,a) \leftarrow r + \gamma V(s')
+  \]
+
+  \vspace{0.4cm}
+  Learn $V$ as an upper expectile of in-dataset $Q$ values:
+  \[
+    \mathcal L_V
+    =
+    \mathbb E_{(s,a)\sim \dataset}
+    \left[
+      \left|\tau - \mathbf 1_{Q(s,a)-V(s)<0}\right|
+      (Q(s,a)-V(s))^2
+    \right],
+    \quad \tau>0.5
+  \]
+  \note{Position IQL as the modern offline RL answer to support mismatch. Explain expectile informally: not a hard max, but a high value among actions seen in the dataset. Cite Kostrikov et al. here.}
+\end{frame}
+
+\begin{frame}{In-sample value learning}
+  \centering
+  \begin{tikzpicture}[>=Latex,x=1cm,y=1cm]
+    \draw[->,thick] (0,0) -- (10,0) node[right] {in-dataset actions};
+    \foreach \x/\h in {1.2/1.0,2.0/2.1,3.1/1.5,4.1/3.0,5.2/2.4,6.0/1.8,7.0/2.8} {
+      \draw[fill=Panel] (\x-0.12,0) rectangle (\x+0.12,\h);
+    }
+    \draw[SignalGreen,ultra thick] (0.7,2.55) -- (7.5,2.55);
+    \node[right] at (7.5,2.55) {$V(s)$: high but supported};
+    \draw[WarmGold,dashed,thick] (8.6,0) -- (8.6,3.8);
+    \node[above] at (8.6,3.8) {unseen max};
+  \end{tikzpicture}
+
+  \vspace{0.4cm}
+  IQL estimates a high value from in-dataset actions instead of maximizing over all actions.
+  \note{This diagram is the visual version of expectile learning. The value is optimistic within the dataset, not outside it.}
+\end{frame}
+
+\begin{frame}{IQL policy extraction}
+  \Large
+  \[
+    \mathcal L_\pi
+    =
+    -\mathbb E_{(s,a)\sim \dataset}
+    \left[
+      \exp\left(\frac{Q(s,a)-V(s)}{\beta}\right)
+      \log \pi_\theta(a \mid s)
+    \right]
+  \]
+
+  \vspace{0.4cm}
+  \normalsize
+  IQL uses advantage-weighted policy extraction after in-sample value learning.
+  \note{Connect back to AWR explicitly. The audience should see that IQL is not a disconnected algorithm; it reuses the AWR idea after learning better values.}
+\end{frame}
+
+\begin{frame}{IDQL: when the action distribution is multimodal}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[->,thick] (0,0) -- (10,0) node[right] {action};
+    \fill[SignalGreen] (2.4,0) circle (5pt);
+    \fill[SignalGreen] (7.2,0) circle (5pt);
+    \fill[WarmGold] (4.8,0) circle (5pt);
+    \node[above] at (2.4,0.15) {good mode};
+    \node[above] at (7.2,0.15) {good mode};
+    \node[below] at (4.8,-0.15) {bad average};
+  \end{tikzpicture}
+
+  \vspace{0.5cm}
+  A simple Gaussian policy may average two good actions into a bad one.
+  \note{This is the motivation for diffusion policies. IDQL should feel inevitable: better value learning is not enough if the actor cannot represent the improved action distribution.}
+\end{frame}
+
+\begin{frame}{Diffusion policies: generate actions by denoising}
+  \centering
+  \begin{tikzpicture}[node distance=0.75cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.2cm] (noise) {noise $a_K$};
+    \node[draw,rounded corners,fill=Panel,right=of noise,minimum width=2.2cm] (step1) {denoise};
+    \node[draw,rounded corners,fill=Panel,right=of step1,minimum width=2.2cm] (step2) {denoise};
+    \node[draw,rounded corners,fill=Panel,right=of step2,minimum width=2.2cm] (action) {action $a_0$};
+    \draw[->,thick] (noise) -- (step1);
+    \draw[->,thick] (step1) -- (step2);
+    \draw[->,thick] (step2) -- (action);
+    \node[below=0.25cm of step1] {$p_\psi(a_{k-1}\mid a_k,s)$};
+  \end{tikzpicture}
+
+  \vspace{0.5cm}
+  A diffusion policy represents $p_\psi(a\mid s)$ as an iterative conditional generation process \cite{chi2023diffusionpolicy}.
+
+  \vspace{0.3cm}
+  Instead of predicting one mean action, it can sample diverse plausible actions.
+  \note{Explain this as an action generator, not an image model. Given state s, start from noise and denoise toward an action that looks like actions in the data.}
+\end{frame}
+
+\begin{frame}{Why diffusion policies fit offline RL}
+  \begin{itemize}
+    \item They can model multimodal action distributions.
+    \item They stay anchored to logged behavior through behavior-model training.
+    \item They expose multiple candidate actions for critic scoring.
+    \item They are useful when action spaces are continuous, structured, or high-dimensional.
+  \end{itemize}
+
+  \vspace{0.4cm}
+  \takeaway{Diffusion policies separate representation from improvement: sample plausible actions first, then use value estimates to prefer better ones.}
+  \note{This slide bridges diffusion policies to IDQL. The point is not just expressivity; it is expressivity under offline support constraints.}
+\end{frame}
+
+\begin{frame}{IDQL pipeline}
+  \centering
+  \begin{tikzpicture}[node distance=0.8cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.6cm] (data) {offline dataset};
+    \node[draw,rounded corners,fill=Panel,right=of data,minimum width=2.6cm] (critic) {IQL-style critic};
+    \node[draw,rounded corners,fill=Panel,right=of critic,minimum width=2.9cm] (diff) {diffusion policy};
+    \node[draw,rounded corners,fill=Panel,below=of diff,minimum width=2.9cm] (sample) {sample actions};
+    \node[draw,rounded corners,fill=Panel,left=of sample,minimum width=2.9cm] (score) {score / reweight};
+    \node[draw,rounded corners,fill=Panel,left=of score,minimum width=2.9cm] (policy) {improved policy};
+    \draw[->,thick] (data) -- (critic);
+    \draw[->,thick] (critic) -- (diff);
+    \draw[->,thick] (diff) -- (sample);
+    \draw[->,thick] (sample) -- (score);
+    \draw[->,thick] (score) -- (policy);
+  \end{tikzpicture}
+
+  \vspace{0.3cm}
+  IDQL combines an IQL-style critic with diffusion-based policy extraction \cite{hansenestruch2023idql}.
+  \vspace{0.4cm}
+  \takeaway{IQL tells us which actions are valuable; IDQL gives us a richer way to represent and sample them.}
+  \note{Keep this conceptual. The diffusion actor gives expressive sampling; the critic makes samples value-aware. This is the advanced endpoint without turning the talk into a derivation.}
+\end{frame}

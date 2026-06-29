@@ -1,0 +1,107 @@
+\section{Control Excursion}
+
+\begin{frame}{Excursion: control and RL}
+  \Large
+  Now that we have RL notation, classical control is easy to place:
+
+  \vspace{0.4cm}
+  \[
+    \text{controller} \approx \text{policy}, \qquad
+    \text{cost-to-go} \approx \text{value function}.
+  \]
+
+  \vspace{0.4cm}
+  \normalsize
+  Both fields ask how to choose actions that improve future outcomes.
+
+  \productbox{In the grain terminal, both a hand-designed controller and an RL policy are decision rules for routing, assignment, and loading.}
+  \note{This is now an excursion, not the entry point. The audience already has states, actions, rewards, policies, and values, so the control analogy lands without introducing foreign notation too early.}
+\end{frame}
+
+\begin{frame}{Control $\leftrightarrow$ RL dictionary}
+  \small
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Control theory} & \textbf{Reinforcement learning} \\
+    \midrule
+    State $x_t$ & State $s_t$ \\
+    Control $u_t$ & Action $a_t$ \\
+    Dynamics $f$ & Transition $P(s' \mid s,a)$ \\
+    Cost $c(x,u)$ & Negative reward $-r(s,a)$ \\
+    Controller & Policy $\pi(a \mid s)$ \\
+    Cost-to-go $J(x)$ & Value function $V(s)$ \\
+    Dynamic programming / HJB & Bellman equations \\
+    MPC & Model-based RL / planning \\
+    \bottomrule
+  \end{tabular}
+  \note{Walk down the table only after the RL side has already been established. This avoids asking the audience to learn two notational systems at once.}
+\end{frame}
+
+\begin{frame}{Classical example: PID control}
+  \Large
+  A PID controller chooses an action from tracking error:
+
+  \[
+    u_t =
+    K_P e_t
+    + K_I \sum_{\tau \le t} e_\tau
+    + K_D(e_t-e_{t-1})
+  \]
+
+  \vspace{0.3cm}
+  \normalsize
+  It is simple, interpretable, and often very strong when the control objective is local and well specified.
+  \note{Use PID as the familiar classical baseline. It is not a strawman: PID is practical, robust, and widely deployed. The point is where it starts to strain.}
+\end{frame}
+
+\begin{frame}{PID and RL: different strengths}
+  \small
+  \centering
+  \begin{tabular}{p{0.43\textwidth}p{0.43\textwidth}}
+    \toprule
+    \textbf{Classical / PID control} & \textbf{Reinforcement learning} \\
+    \midrule
+    Simple and interpretable & Optimizes delayed objectives \\
+    Strong local feedback & Handles sequential tradeoffs \\
+    Easier to validate & Learns from data and simulation \\
+    Needs hand-designed structure & Can adapt to nonlinear operations \\
+    Usually optimizes a proxy & Can optimize the KPI directly \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.35cm}
+  \takeaway{Classical control is often the right starting point. RL becomes attractive when the best action depends on long-horizon operational consequences.}
+  \note{Be balanced. Classical methods can be safer and easier to debug. RL is compelling when routing, queues, blending, and loading interact over time.}
+\end{frame}
+
+\begin{frame}{Why RL should improve long term}
+  \begin{itemize}
+    \item It can optimize delayed outcomes, not only immediate tracking error.
+    \item It can use simulators to evaluate actions not yet tried in production.
+    \item It can learn terminal-specific interactions among queues, silos, conveyors, and trains.
+    \item It can update as operating conditions and objectives change.
+  \end{itemize}
+
+  \vspace{0.35cm}
+  \productbox{For grain loading, the best local move may not be the best move for throughput, quality, rehandling, and train delay.}
+  \note{This is the argument for RL without overclaiming. RL should win when it has enough data, a useful simulator or offline evaluation, and the objective is genuinely long horizon.}
+\end{frame}
+
+\begin{frame}{The worlds can be combined}
+  \centering
+  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.8cm] (theta) {controller params};
+    \node[draw,rounded corners,fill=Panel,right=of theta,minimum width=2.8cm] (pid) {PID / MPC policy};
+    \node[draw,rounded corners,fill=Panel,right=of pid,minimum width=2.8cm] (env) {RL environment};
+    \node[draw,rounded corners,fill=Panel,below=of pid,minimum width=2.8cm] (return) {return $G_t$};
+    \draw[->,thick] (theta) -- node[above] {$K_P,K_I,K_D$} (pid);
+    \draw[->,thick] (pid) -- node[above] {$a_t$} (env);
+    \draw[->,thick] (env) -- (return);
+    \draw[->,thick,SignalGreen] (return) -| node[pos=0.25,below] {improve params} (theta);
+  \end{tikzpicture}
+
+  \vspace{0.5cm}
+  \takeaway{A classical controller can be the policy class. RL can learn or tune its parameters from return.}
+  \note{This is the reconciliation. The policy does not need to be a neural network. RL can tune a structured controller, combine learned components with classical control, or use classical controllers as safe baselines.}
+\end{frame}

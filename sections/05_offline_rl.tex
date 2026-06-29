@@ -1,0 +1,70 @@
+\section{Offline RL}
+
+\begin{frame}{Offline RL setting}
+  \Large
+  Fixed dataset:
+  \[
+    \dataset = \{(s_t,a_t,r_t,s_{t+1})\}
+  \]
+
+  \vspace{0.2cm}
+  Behavior policy:
+  \[
+    \mu(a \mid s)
+  \]
+
+  \vspace{0.2cm}
+  Goal: learn $\pi(a \mid s)$ without online interaction during training.
+
+  \productbox{Logged data source: terminal operator logs. Action space: truck selection, pit assignment, conveyor route, silo, and loading schedule.}
+  \note{Define offline RL cleanly. The data was collected by some behavior policy, often not known exactly. Emphasize that this is policy improvement under support constraints, not supervised learning.}
+\end{frame}
+
+\begin{frame}{Support mismatch}
+  \centering
+  \begin{tikzpicture}[>=Latex]
+    \draw[->,thick] (0,0) -- (10,0) node[right] {action};
+    \foreach \x/\lab in {2/$a_1$,3.2/$a_2$,4.3/$a_3$} {
+      \fill[SignalGreen] (\x,0) circle (4pt);
+      \node[below=0.18cm] at (\x,0) {\lab};
+    }
+    \node[draw,rounded corners,fill=Panel,above=0.8cm] at (3.15,0) {seen in $\dataset$};
+    \fill[WarmGold] (8.1,0) circle (5pt);
+    \node[below=0.18cm] at (8.1,0) {$a^\star$};
+    \node[draw,rounded corners,fill=Panel,above=0.8cm] at (8.1,0) {chosen by learned policy};
+  \end{tikzpicture}
+
+  \vspace{0.6cm}
+  The policy may choose an unsupported action where the value estimate is unreliable.
+  \note{This is the core offline RL failure mode. The dataset covers actions near the behavior policy, but maximization may select an action far away.}
+\end{frame}
+
+\begin{frame}{Why naive Q-learning fails offline}
+  \Large
+  Dangerous backup:
+  \[
+    \max_a Q(s,a)
+  \]
+
+  \vspace{0.4cm}
+  \normalsize
+  The max can select actions that were rarely or never observed.
+
+  \vspace{0.4cm}
+  Then the learned policy may exploit errors in $Q$ outside the data distribution.
+  \note{Explain overestimation: if the value function is wrong somewhere, the max operation will actively search for that mistake.}
+\end{frame}
+
+\begin{frame}{The offline RL thesis}
+  \Large
+  Offline RL is mostly about preventing the policy from exploiting value errors outside the data distribution.
+
+  \vspace{0.5cm}
+  \normalsize
+  The rest of the talk builds a ladder:
+
+  \[
+    \text{BC} \rightarrow \text{AWR} \rightarrow \text{IQL} \rightarrow \text{IDQL}
+  \]
+  \note{Use this as the transition into algorithms. Each method fixes a limitation of the previous one.}
+\end{frame}

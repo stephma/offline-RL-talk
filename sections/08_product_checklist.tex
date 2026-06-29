@@ -1,0 +1,54 @@
+\section{Product Checklist}
+
+\begin{frame}{What matters in real offline RL systems?}
+  \small
+  \begin{enumerate}
+    \item \textbf{State quality:} is the decision approximately Markovian?
+    \item \textbf{Action support:} does $\dataset$ cover actions we want $\pi$ to take?
+    \item \textbf{Reward design:} does reward reflect throughput, quality, delay, rehandling, and train-loading penalties?
+    \item \textbf{Counterfactual risk:} are we evaluating rare or unseen actions?
+    \item \textbf{Evaluation:} offline evaluation, simulation, shadow deployment, or cautious rollout?
+    \item \textbf{Policy constraints:} how far may $\pi$ move from $\mu$?
+  \end{enumerate}
+
+  \vspace{0.2cm}
+  \productbox{Safe deployment strategy: shadow recommendations, operator approval, and constrained rollout.}
+  \note{This gives the business and product audience a practical checklist. It also makes clear that offline RL is a systems problem, not just an algorithm.}
+\end{frame}
+
+\begin{frame}{Product architecture sketch}
+  \centering
+  \begin{tikzpicture}[node distance=0.85cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.8cm] (logs) {logged data};
+    \node[draw,rounded corners,fill=Panel,right=of logs,minimum width=2.8cm] (train) {offline training};
+    \node[draw,rounded corners,fill=Panel,right=of train,minimum width=2.8cm] (eval) {offline eval};
+    \node[draw,rounded corners,fill=Panel,below=of eval,minimum width=2.8cm] (shadow) {shadow deploy};
+    \node[draw,rounded corners,fill=Panel,left=of shadow,minimum width=2.8cm] (rollout) {safe rollout};
+    \node[draw,rounded corners,fill=Panel,left=of rollout,minimum width=2.8cm] (monitor) {monitor KPIs};
+    \draw[->,thick] (logs) -- (train);
+    \draw[->,thick] (train) -- (eval);
+    \draw[->,thick] (eval) -- (shadow);
+    \draw[->,thick] (shadow) -- (rollout);
+    \draw[->,thick] (rollout) -- (monitor);
+    \draw[->,thick,bend right=35] (monitor) to (logs);
+  \end{tikzpicture}
+
+  \note{Use this as the product systems view. Offline RL does not remove the need for evaluation and careful rollout.}
+\end{frame}
+
+\begin{frame}{Closing thesis}
+  \Large
+  RL is data-driven optimal control.
+
+  \vspace{0.5cm}
+  Offline RL is controlled policy improvement from logged data.
+
+  \vspace{0.5cm}
+  \normalsize
+  The ladder:
+  \[
+    \text{control} \rightarrow \text{RL} \rightarrow \text{offline RL}
+    \rightarrow \text{BC} \rightarrow \text{AWR} \rightarrow \text{IQL} \rightarrow \text{IDQL}
+  \]
+  \note{Close by returning to the core thesis. The audience should remember the ladder even if they forget the expectile objective.}
+\end{frame}
