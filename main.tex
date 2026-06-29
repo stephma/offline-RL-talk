@@ -1,0 +1,66 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{tikz}
+
+\definecolor{DeepNavy}{HTML}{0B1320}
+\definecolor{SignalGreen}{HTML}{22C55E}
+\definecolor{WarmGold}{HTML}{F4B942}
+\definecolor{SoftGray}{HTML}{E5E7EB}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{normal text}{fg=SoftGray,bg=DeepNavy}
+
+\title{Deep Reinforcement Learning}
+\subtitle{From Value Functions to Offline Decision Making}
+\author{Stephan}
+\institute{Offline RL Talk}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}[plain,noframenumbering]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[DeepNavy] (current page.south west) rectangle (current page.north east);
+
+    \begin{scope}[shift={(current page.south west)}]
+      \foreach \x/\y/\r in {
+        1.9/6.5/1.5pt,
+        3.2/4.7/1.2pt,
+        4.8/6.1/1.8pt,
+        7.0/4.2/1.3pt,
+        9.1/5.7/1.7pt,
+        11.3/3.8/1.2pt,
+        13.1/5.5/1.6pt,
+        14.6/3.4/1.1pt
+      } {
+        \fill[SignalGreen] (\x,\y) circle (\r);
+      }
+
+      \draw[SignalGreen!40,line width=0.6pt]
+        (1.9,6.5) -- (4.8,6.1) -- (9.1,5.7) -- (13.1,5.5);
+
+      \draw[WarmGold!55,line width=0.6pt]
+        (3.2,4.7) -- (7.0,4.2) -- (11.3,3.8) -- (14.6,3.4);
+
+      \fill[SignalGreen] (0,0) rectangle (0.18,9);
+      \fill[WarmGold] (0.18,0) rectangle (0.25,9);
+    \end{scope}
+  \end{tikzpicture}
+
+  \vspace*{1.3cm}
+  {\usebeamerfont{title}\Huge\bfseries\inserttitle\par}
+  \vspace{0.35cm}
+  {\Large\color{SoftGray!85}\insertsubtitle\par}
+
+  \vfill
+
+  {\fontsize{11}{14}\selectfont
+    \textcolor{SignalGreen}{\insertauthor}
+    \hspace{0.8cm}
+    \textcolor{SoftGray!70}{\insertinstitute}
+    \hspace{0.8cm}
+    \textcolor{SoftGray!70}{\insertdate}
+  \par}
+\end{frame}
+
+\end{document}
