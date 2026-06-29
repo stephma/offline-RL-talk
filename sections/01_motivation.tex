@@ -1,6 +1,6 @@
 \section{Product Motivation}
 
-\begin{frame}{Predictions are not decisions}
+\begin{frame}{Predictions Are Not Decisions}
   \centering
   \begin{tabular}{p{0.43\textwidth}p{0.43\textwidth}}
     \toprule
@@ -18,7 +18,7 @@
   \note{Open with the grain terminal. Prediction is useful, but the product tension starts when the system must choose an action that changes the operation.}
 \end{frame}
 
-\begin{frame}{Actions change the future}
+\begin{frame}{Actions Change the Future}
   \centering
   \begin{tikzpicture}[node distance=0.55cm,>=Latex,scale=0.94,transform shape]
     \node[draw,rounded corners,fill=Panel,minimum width=2.0cm,minimum height=0.8cm] (queue) {truck queue};
@@ -41,7 +41,7 @@
   \note{This is the main conceptual gap. Supervised learning assumes a fixed data distribution; a policy changes the states it will see next.}
 \end{frame}
 
-\begin{frame}{Why imitation can fail}
+\begin{frame}{Why Imitation Can Fail}
   \Large
   A behavior-cloned operator policy may be 99\% accurate at each decision.
 
@@ -64,7 +64,7 @@
   \note{Introduce behavior cloning intuitively before the formal BC section. One small action error can push the terminal into a state not well represented in the logs, where more errors become likely.}
 \end{frame}
 
-\begin{frame}{Why RL needs more than logs}
+\begin{frame}{Why RL Needs More Than Logs}
   \centering
   \begin{tikzpicture}[node distance=0.9cm,>=Latex]
     \node[draw,rounded corners,fill=Panel,minimum width=3.3cm,minimum height=0.9cm] (sim) {simulator available};
@@ -80,7 +80,7 @@
   \note{This sets up the later offline RL material. If we have a simulator, RL can evaluate counterfactual actions. If we only have logs, offline RL must improve while respecting dataset support.}
 \end{frame}
 
-\begin{frame}{The RL question}
+\begin{frame}{The RL Question}
   \Large
   Given logged grain-terminal decisions and delayed outcomes, can we learn a better policy without risky online experimentation?
 

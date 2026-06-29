@@ -1,6 +1,6 @@
 \section{Behavior Cloning and AWR}
 
-\begin{frame}{Behavior cloning}
+\begin{frame}{Behavior Cloning}
   \Large
   \[
     \mathcal L_{\mathrm{BC}}(\theta)
@@ -18,7 +18,7 @@
   \note{Behavior cloning is just supervised learning on logged actions. It is the baseline every offline RL method should beat.}
 \end{frame}
 
-\begin{frame}{BC clones all actions equally}
+\begin{frame}{BC Clones All Actions Equally}
   \centering
   \begin{tikzpicture}[x=1.2cm,y=0.8cm]
     \node[left] at (0,3) {action A};
@@ -37,7 +37,7 @@
   \note{This sets up AWR. BC is stable because it stays in the data, but it does not perform value-aware improvement.}
 \end{frame}
 
-\begin{frame}{Advantage-weighted regression}
+\begin{frame}{Advantage-Weighted Regression}
   \Large
   \[
     \mathcal L_{\mathrm{AWR}}(\theta)
@@ -54,7 +54,7 @@
   \note{Present AWR as a minimal conceptual step: still supervised learning, but weighted by long-term value. Cite Peng et al. verbally here.}
 \end{frame}
 
-\begin{frame}{BC vs. AWR weighting}
+\begin{frame}{BC vs. AWR Weighting}
   \centering
   \begin{tikzpicture}[x=1.15cm,y=0.85cm]
     \node at (1.2,4) {BC};
@@ -75,7 +75,7 @@
   \note{Use this example to make AWR intuitive. If the logs contain mixed-quality decisions, AWR preferentially imitates the better parts.}
 \end{frame}
 
-\begin{frame}{AWR is the first RL step}
+\begin{frame}{AWR Is the First RL Step}
   \Large
   AWR is the smallest conceptual step from imitation learning to reinforcement learning.
 

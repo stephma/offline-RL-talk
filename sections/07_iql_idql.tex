@@ -1,6 +1,6 @@
 \section{IQL and IDQL}
 
-\begin{frame}{IQL critic learning}
+\begin{frame}{IQL Critic Learning}
   \Large
   Avoid explicit maximization over unseen actions:
   \[
@@ -29,7 +29,7 @@
   \note{Position IQL as the modern offline RL answer to support mismatch. Explain expectile informally: not a hard max, but a high value among actions seen in the dataset. Cite Kostrikov et al. here.}
 \end{frame}
 
-\begin{frame}{In-sample value learning}
+\begin{frame}{In-Sample Value Learning}
   \centering
   \begin{tikzpicture}[>=Latex,x=1cm,y=1cm]
     \draw[->,thick] (0,0) -- (10,0) node[right] {in-dataset actions};
@@ -47,7 +47,7 @@
   \note{This diagram is the visual version of expectile learning. The value is optimistic within the dataset, not outside it.}
 \end{frame}
 
-\begin{frame}{IQL policy extraction}
+\begin{frame}{IQL Policy Extraction}
   \Large
   \[
     \mathcal L_\pi
@@ -65,7 +65,7 @@
   \note{Connect back to AWR explicitly. The audience should see that IQL is not a disconnected algorithm; it reuses the AWR idea after learning better values.}
 \end{frame}
 
-\begin{frame}{IDQL: when the action distribution is multimodal}
+\begin{frame}{IDQL: When the Action Distribution Is Multimodal}
   \centering
   \begin{tikzpicture}[x=1cm,y=1cm]
     \draw[->,thick] (0,0) -- (10,0) node[right] {action};
@@ -82,7 +82,7 @@
   \note{This is the motivation for diffusion policies. IDQL should feel inevitable: better value learning is not enough if the actor cannot represent the improved action distribution.}
 \end{frame}
 
-\begin{frame}{Diffusion policies: generate actions by denoising}
+\begin{frame}{Diffusion Policies: Generate Actions by Denoising}
   \centering
   \begin{tikzpicture}[node distance=0.75cm,>=Latex]
     \node[draw,rounded corners,fill=Panel,minimum width=2.2cm] (noise) {noise $a_K$};
@@ -103,7 +103,7 @@
   \note{Explain this as an action generator, not an image model. Given state s, start from noise and denoise toward an action that looks like actions in the data.}
 \end{frame}
 
-\begin{frame}{Why diffusion policies fit offline RL}
+\begin{frame}{Why Diffusion Policies Fit Offline RL}
   \begin{itemize}
     \item They can model multimodal action distributions.
     \item They stay anchored to logged behavior through behavior-model training.
@@ -116,7 +116,7 @@
   \note{This slide bridges diffusion policies to IDQL. The point is not just expressivity; it is expressivity under offline support constraints.}
 \end{frame}
 
-\begin{frame}{IDQL pipeline}
+\begin{frame}{IDQL Pipeline}
   \centering
   \begin{tikzpicture}[node distance=0.8cm,>=Latex]
     \node[draw,rounded corners,fill=Panel,minimum width=2.6cm] (data) {offline dataset};

@@ -1,6 +1,6 @@
 \section{MDPs and Value Functions}
 
-\begin{frame}{The minimal RL formalism}
+\begin{frame}{The Minimal RL Formalism}
   \Large
   A Markov Decision Process:
   \[
@@ -19,7 +19,7 @@
   \note{Introduce vocabulary only. The key assumption is Markovian state: the state contains enough information to make the next decision.}
 \end{frame}
 
-\begin{frame}{Agent-environment loop}
+\begin{frame}{Agent-Environment Loop}
   \centering
   \begin{tikzpicture}[node distance=1.4cm,>=Latex]
     \node[draw,rounded corners,fill=Panel,minimum width=3cm,minimum height=1cm] (agent) {agent / policy $\pi$};
@@ -28,28 +28,45 @@
     \draw[->,thick] (env.south) -- ++(0,-1.0) -| node[pos=0.25,below] {$s_{t+1}, r_t$} (agent.south);
   \end{tikzpicture}
 
-  \vspace{0.7cm}
-  \productbox{In products, the ``environment'' may be customers, infrastructure, markets, robots, or agents.}
-  \note{This diagram clarifies the closed loop. The policy changes the data distribution by choosing actions.}
+  \vspace{0.55cm}
+  \begin{itemize}
+    \item \textbf{Agent:} chooses the next action from the current state.
+    \item \textbf{Environment:} the facility or simulation that returns the next state and reward.
+  \end{itemize}
+  \note{This diagram clarifies the closed loop. The policy changes the data distribution by choosing actions. In this talk, the environment is either the physical grain facility or a simulator of that facility.}
 \end{frame}
 
-\begin{frame}{Return and discounting}
+\begin{frame}{Value and Discounting}
   \Large
-  The return is cumulative future reward:
+  The value of a state is expected discounted reward:
 
   \[
-    G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k}
+    V^\pi(s)
+    =
+    \mathbb E_\pi
+    \left[
+      \sum_{k=0}^{\infty} \gamma^k r_{t+k}
+      \,\middle|\, s_t=s
+    \right]
   \]
 
-  \vspace{0.4cm}
+  \vspace{0.25cm}
   \normalsize
-  A policy is good if its actions lead to high long-term return, not merely good immediate outcomes.
-  \note{Emphasize delayed consequences again. Discounting is a practical way to trade off immediate and future rewards.}
+  The discount factor $0 < \gamma < 1$ controls how much the agent plans ahead.
+
+  \vspace{0.25cm}
+  \begin{itemize}
+    \item small $\gamma$: more myopic, closer to greedy behavior
+    \item large $\gamma$: more weight on delayed consequences
+    \item finance analogy: like net present value, rewards today count more than equal future rewards
+    \item grain loading: a greedy fill policy optimizes each railcar; a farsighted policy optimizes the entire train
+  \end{itemize}
+
+  \note{Define value directly as expected discounted reward, avoiding a separate return concept. A greedy agent grabs reward as soon as it appears, like an animal taking food immediately. A more planning agent may delay reward to improve future outcomes. Humans often plan over longer horizons. Connect this to net present value in finance: money today is worth more than the same nominal payoff later. In grain loading, a greedy fill policy optimizes each railcar independently, while a farsighted policy optimizes the whole train and the contract across all cars. Gamma is the knob that controls this tradeoff.}
 \end{frame}
 
-\begin{frame}{$V$, $Q$, and advantage}
+\begin{frame}{$V$, $Q$, and Advantage}
   \begin{align*}
-    V^\pi(s) &= \text{value of state }s\text{ under policy }\pi \\
     Q^\pi(s,a) &= \text{value of taking }a\text{ in }s\text{, then following }\pi \\
     A^\pi(s,a) &= Q^\pi(s,a) - V^\pi(s)
   \end{align*}
@@ -59,7 +76,7 @@
   \note{Advantage is the bridge to AWR, IQL, and IDQL. Make sure this concept lands.}
 \end{frame}
 
-\begin{frame}{Bellman thinking}
+\begin{frame}{Bellman Thinking}
   \Large
   \[
     Q(s,a) \approx r(s,a) + \gamma V(s')

@@ -1,6 +1,6 @@
 \section{Online and Model-Based RL}
 
-\begin{frame}{Online RL loop}
+\begin{frame}{Online RL Loop}
   \centering
   \begin{tikzpicture}[node distance=1.15cm,>=Latex]
     \node[draw,rounded corners,fill=Panel,minimum width=2.2cm] (act) {act};
@@ -17,7 +17,7 @@
   \note{Keep this short. It exists to set up what offline RL is not.}
 \end{frame}
 
-\begin{frame}{Three common RL families}
+\begin{frame}{Three Common RL Families}
   \centering
   \begin{tabular}{ll}
     \toprule
@@ -33,7 +33,7 @@
   \note{Avoid a DQN/PPO survey. The goal is vocabulary and motivation for critics, actors, and value functions.}
 \end{frame}
 
-\begin{frame}{Why online RL is hard in products}
+\begin{frame}{Why Online RL Is Hard in Products}
   \begin{itemize}
     \item Unsafe or costly exploration
     \item Customer-facing experiments
@@ -47,7 +47,7 @@
   \note{Give concrete examples: bad recommendations, unsafe robot actions, costly interventions, or agent mistakes.}
 \end{frame}
 
-\begin{frame}{Model-based RL: learn the dynamics, then plan}
+\begin{frame}{Model-Based RL: Learn the Dynamics, Then Plan}
   \[
     \hat{s}_{t+1} = \hat{f}_\theta(s_t,a_t)
   \]

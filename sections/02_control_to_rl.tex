@@ -1,6 +1,6 @@
 \section{Control Excursion}
 
-\begin{frame}{Excursion: control and RL}
+\begin{frame}{Excursion: Control and RL}
   \Large
   Now that we have RL notation, classical control is easy to place:
 
@@ -18,7 +18,7 @@
   \note{This is now an excursion, not the entry point. The audience already has states, actions, rewards, policies, and values, so the control analogy lands without introducing foreign notation too early.}
 \end{frame}
 
-\begin{frame}{Control $\leftrightarrow$ RL dictionary}
+\begin{frame}{Control $\leftrightarrow$ RL Dictionary}
   \small
   \centering
   \begin{tabular}{ll}
@@ -38,7 +38,7 @@
   \note{Walk down the table only after the RL side has already been established. This avoids asking the audience to learn two notational systems at once.}
 \end{frame}
 
-\begin{frame}{Classical example: PID control}
+\begin{frame}{Classical Example: PID Control}
   \Large
   A PID controller chooses an action from tracking error:
 
@@ -55,7 +55,46 @@
   \note{Use PID as the familiar classical baseline. It is not a strawman: PID is practical, robust, and widely deployed. The point is where it starts to strain.}
 \end{frame}
 
-\begin{frame}{PID and RL: different strengths}
+\begin{frame}{PID as an RL Policy}
+  \small
+  Define the RL state to include the PID features:
+  \[
+    s_t =
+    \left(
+      y_t,\,
+      e_t,\,
+      I_t,\,
+      D_t
+    \right),
+    \quad
+    I_t=\sum_{\tau \le t} e_\tau,
+    \quad
+    D_t=e_t-e_{t-1}.
+  \]
+
+  Then PID is a deterministic policy:
+  \[
+    a_t = \pi_K(s_t)
+    =
+    K_P e_t + K_I I_t + K_D D_t,
+    \qquad
+    K=(K_P,K_I,K_D).
+  \]
+
+  The environment remains the transition model:
+  \[
+    s_{t+1} \sim p(s_{t+1}\mid s_t,a_t).
+  \]
+
+  \begin{itemize}
+    \item Since $K$ parameterizes a policy, RL can tune $K$ by optimizing return.
+  \end{itemize}
+
+  \takeaway{PID is a structured policy class; RL can tune its parameters by optimizing return.}
+  \note{Be precise about the roles. The PID controller is the policy that chooses the action. The plant or simulator is the transition distribution p(s next given state and action). Because the gains parameterize the policy, RL can optimize them directly.}
+\end{frame}
+
+\begin{frame}{PID and RL: Different Strengths}
   \small
   \centering
   \begin{tabular}{p{0.43\textwidth}p{0.43\textwidth}}
@@ -75,7 +114,7 @@
   \note{Be balanced. Classical methods can be safer and easier to debug. RL is compelling when routing, queues, blending, and loading interact over time.}
 \end{frame}
 
-\begin{frame}{Why RL should improve long term}
+\begin{frame}{Why RL Should Improve Long Term}
   \begin{itemize}
     \item It can optimize delayed outcomes, not only immediate tracking error.
     \item It can use simulators to evaluate actions not yet tried in production.
@@ -86,22 +125,4 @@
   \vspace{0.35cm}
   \productbox{For grain loading, the best local move may not be the best move for throughput, quality, rehandling, and train delay.}
   \note{This is the argument for RL without overclaiming. RL should win when it has enough data, a useful simulator or offline evaluation, and the objective is genuinely long horizon.}
-\end{frame}
-
-\begin{frame}{The worlds can be combined}
-  \centering
-  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
-    \node[draw,rounded corners,fill=Panel,minimum width=2.8cm] (theta) {controller params};
-    \node[draw,rounded corners,fill=Panel,right=of theta,minimum width=2.8cm] (pid) {PID / MPC policy};
-    \node[draw,rounded corners,fill=Panel,right=of pid,minimum width=2.8cm] (env) {RL environment};
-    \node[draw,rounded corners,fill=Panel,below=of pid,minimum width=2.8cm] (return) {return $G_t$};
-    \draw[->,thick] (theta) -- node[above] {$K_P,K_I,K_D$} (pid);
-    \draw[->,thick] (pid) -- node[above] {$a_t$} (env);
-    \draw[->,thick] (env) -- (return);
-    \draw[->,thick,SignalGreen] (return) -| node[pos=0.25,below] {improve params} (theta);
-  \end{tikzpicture}
-
-  \vspace{0.5cm}
-  \takeaway{A classical controller can be the policy class. RL can learn or tune its parameters from return.}
-  \note{This is the reconciliation. The policy does not need to be a neural network. RL can tune a structured controller, combine learned components with classical control, or use classical controllers as safe baselines.}
 \end{frame}

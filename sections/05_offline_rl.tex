@@ -1,6 +1,6 @@
 \section{Offline RL}
 
-\begin{frame}{Offline RL setting}
+\begin{frame}{Offline RL Setting}
   \Large
   Fixed dataset:
   \[
@@ -20,7 +20,7 @@
   \note{Define offline RL cleanly. The data was collected by some behavior policy, often not known exactly. Emphasize that this is policy improvement under support constraints, not supervised learning.}
 \end{frame}
 
-\begin{frame}{Support mismatch}
+\begin{frame}{Support Mismatch}
   \centering
   \begin{tikzpicture}[>=Latex]
     \draw[->,thick] (0,0) -- (10,0) node[right] {action};
@@ -39,7 +39,7 @@
   \note{This is the core offline RL failure mode. The dataset covers actions near the behavior policy, but maximization may select an action far away.}
 \end{frame}
 
-\begin{frame}{Why naive Q-learning fails offline}
+\begin{frame}{Why Naive Q-Learning Fails Offline}
   \Large
   Dangerous backup:
   \[
@@ -55,7 +55,7 @@
   \note{Explain overestimation: if the value function is wrong somewhere, the max operation will actively search for that mistake.}
 \end{frame}
 
-\begin{frame}{The offline RL thesis}
+\begin{frame}{The Offline RL Thesis}
   \Large
   Offline RL is mostly about preventing the policy from exploiting value errors outside the data distribution.
 
