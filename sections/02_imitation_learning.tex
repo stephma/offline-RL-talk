@@ -1,0 +1,112 @@
+\section{First Obvious Idea: Imitate Good Operators}
+
+\begin{frame}{Imitation Learning: Turn Decisions Into Supervised Learning}
+  \large
+  Given this situation, what would the operator usually do?
+
+  \vspace{0.15cm}
+  \normalsize
+  \[
+    \dataset = \{(s_t,a_t)\},
+    \qquad
+    \tau = (s_1,a_1,\ldots,s_T,a_T)
+  \]
+  \[
+    \mathcal L_{\mathrm{BC}}(\theta)
+    =
+    -\mathbb E_{(s,a)\sim\dataset}
+    \left[\log \pi_\theta(a\mid s)\right]
+  \]
+
+  \vspace{0.05cm}
+  For deterministic continuous actions, use regression:
+  \[
+    \min_\theta\ \mathbb E\left[\|a-\pi_\theta(s)\|^2\right]
+  \]
+
+  \vspace{0.05cm}
+  \productbox{Attractive because it is fully offline, simple to train, and does not require defining a reward function.}
+  \note{This is the baseline everyone should think of first. Before asking for RL, ask whether behavior cloning is enough. It is just supervised learning on demonstrated decisions: given this situation, predict what the operator did.}
+\end{frame}
+
+\begin{frame}{Pitfall 1: Averaging Demonstrations Can Fail}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \IfFileExists{assets/lane_change_car.jpg}{%
+        \includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{assets/lane_change_car.jpg}%
+      }{%
+        \begin{tikzpicture}
+          \node[draw,rounded corners,fill=Panel,minimum width=\linewidth,minimum height=0.34\textheight,align=center,text=Muted]
+            {lane-change\\image};
+        \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[x=0.82cm,y=0.72cm,>=Latex]
+        \draw[->,Muted] (-3.2,0) -- (3.25,0) node[right] {action};
+        \draw[->,Muted] (-3.0,0) -- (-3.0,2.4);
+        \draw[thick,SignalGreen,domain=-2.8:2.8,samples=100]
+          plot (\x,{1.9*exp(-1.8*(\x+1.35)^2) + 1.65*exp(-1.8*(\x-1.35)^2)});
+        \draw[dashed,thick,WarmGold] (0,0) -- (0,1.15);
+        \node[align=center,font=\scriptsize] at (-1.45,2.1) {merge\\left};
+        \node[align=center,font=\scriptsize] at (1.45,2.0) {stay\\straight};
+        \node[align=center,text=WarmGold,font=\scriptsize] at (0,-0.42) {mean action};
+        \node[draw,rounded corners,fill=Panel,text width=1.25cm,align=center,font=\scriptsize,inner sep=2pt] at (0,1.55) {bad / unsafe};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.28cm}
+  \large
+  Consider imitation data for self-driving cars:
+
+  \vspace{0.08cm}
+  \normalsize
+  \begin{itemize}
+    \item in similar observed states, driver 1 stays in lane
+    \item driver 2 changes lanes
+    \item squared-error regression learns the conditional mean action
+  \end{itemize}
+
+  \vspace{0.08cm}
+  \textbf{Problem:} the mean action can lie between valid modes: a poor command that no expert demonstrated.
+  \note{Use the driving image and action-density plot together. The training set can contain two valid behaviors for similar observed states: staying in lane and changing lanes. Squared-error regression treats these as noisy labels around one target and learns the mean. But the mean action may be a poor steering command that no driver demonstrated. This motivates richer policy distributions such as mixtures, autoregressive policies, or diffusion policies later.}
+\end{frame}
+
+\begin{frame}{Pitfall 2: Small Mistakes Compound}
+  \large
+  In supervised learning, errors do not change the next input.
+
+  \vspace{0.15cm}
+  \normalsize
+  In behavior cloning, actions change future states:
+  \[
+    p_{\mathrm{expert}}(s) \neq p_{\pi}(s)
+  \]
+
+  \vspace{0.15cm}
+  \centering
+  \begin{tikzpicture}[node distance=0.3cm,>=Latex,scale=0.86,transform shape]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.0cm] (err1) {small error};
+    \node[draw,rounded corners,fill=Panel,right=of err1,minimum width=2.2cm] (state) {new state};
+    \node[draw,rounded corners,fill=Panel,right=of state,minimum width=2.0cm] (err2) {larger error};
+    \node[draw,rounded corners,fill=Panel,right=of err2,minimum width=2.4cm] (ood) {OOD state};
+    \node[draw,rounded corners,fill=Panel,right=of ood,minimum width=1.8cm] (fail) {failure};
+    \draw[->,thick] (err1) -- (state);
+    \draw[->,thick] (state) -- (err2);
+    \draw[->,thick] (err2) -- (ood);
+    \draw[->,thick] (ood) -- (fail);
+  \end{tikzpicture}
+
+  \vspace{0.2cm}
+  One classical fix is DAgger: roll out the learned policy, ask the expert for corrections, and aggregate the new data.
+
+  \vspace{0.08cm}
+  \productbox{Offline logs often underrepresent recovery states, rare failures, and near-miss conditions.}
+
+  \vspace{0.08cm}
+  \textbf{Transition:} Behavior cloning asks what action was likely in the logs. RL asks which action led to better long-term outcomes.
+  \note{Use a self-driving analogy: human demonstrations mostly show centered lane driving. A learned policy drifts slightly, then sees off-center states that are rare in the dataset, then errors compound. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy. This motivates RL as more than action prediction.}
+\end{frame}

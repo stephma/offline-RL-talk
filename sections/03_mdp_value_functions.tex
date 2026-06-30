@@ -1,8 +1,8 @@
 \section{MDPs and Value Functions}
 
-\begin{frame}{The Minimal RL Formalism}
+\begin{frame}{From Decisions to MDPs}
   \Large
-  A Markov Decision Process:
+  A Markov Decision Process adds dynamics and rewards:
   \[
     (\states,\actions,P,r,\gamma)
   \]
@@ -10,13 +10,41 @@
   \vspace{0.2cm}
   \normalsize
   \begin{itemize}
-    \item $s \in \states$: state
-    \item $a \in \actions$: action
+    \item $\states$: possible states
+    \item $\actions$: possible actions
     \item $P(s' \mid s,a)$: transition
     \item $r(s,a)$: reward
     \item $\gamma \in [0,1)$: discount
   \end{itemize}
-  \note{Introduce vocabulary only. The key assumption is Markovian state: the state contains enough information to make the next decision.}
+
+  \vspace{0.2cm}
+  \productbox{The key modeling assumption is that $s_t$ contains enough information to make the next decision.}
+  \note{States, actions, and policies were introduced earlier using the grain terminal example. Here, formalize the MDP by adding stochastic transitions, rewards, and discounting. Emphasize the Markov assumption: the state must contain enough information for decision making.}
+\end{frame}
+
+\begin{frame}{Supervised Learning Setup}
+  \centering
+  \begin{tikzpicture}[node distance=0.8cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.8cm,minimum height=0.9cm] (data) {dataset $\dataset$};
+    \node[draw,rounded corners,fill=Panel,right=of data,minimum width=3.0cm,minimum height=0.9cm] (learn) {learning algorithm};
+    \node[draw,rounded corners,fill=Panel,right=of learn,minimum width=2.8cm,minimum height=0.9cm] (model) {model $f_\theta$};
+    \node[draw,rounded corners,fill=Panel,below=of model,minimum width=2.8cm,minimum height=0.9cm] (pred) {prediction $\hat{y}$};
+    \draw[->,thick] (data) -- (learn);
+    \draw[->,thick] (learn) -- (model);
+    \draw[->,thick] (model) -- (pred);
+  \end{tikzpicture}
+
+  \vspace{0.35cm}
+  \[
+    \dataset = \{(x_i,y_i)\}_{i=1}^n,
+    \qquad
+    \theta^\star = \arg\min_\theta \sum_i \ell(f_\theta(x_i),y_i)
+  \]
+
+  \vspace{0.2cm}
+  \normalsize
+  The model predicts labels from a fixed dataset.
+  \note{Use this as the contrast case. In supervised learning, the data is fixed, the labels are given, and the model is trained to predict. The model does not choose actions that change the future data distribution.}
 \end{frame}
 
 \begin{frame}{Agent-Environment Loop}
@@ -32,8 +60,38 @@
   \begin{itemize}
     \item \textbf{Agent:} chooses the next action from the current state.
     \item \textbf{Environment:} the facility or simulation that returns the next state and reward.
+    \item \textbf{Key contrast:} supervised learning predicts from fixed data; RL actions create the next data.
   \end{itemize}
   \note{This diagram clarifies the closed loop. The policy changes the data distribution by choosing actions. In this talk, the environment is either the physical grain facility or a simulator of that facility.}
+\end{frame}
+
+\begin{frame}{What RL Adds}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \textbf{Challenges}
+      \vspace{0.2cm}
+      \begin{itemize}
+        \item actions change future states
+        \item rewards can be delayed
+        \item errors compound over time
+        \item exploration can be risky
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Opportunities}
+      \vspace{0.2cm}
+      \begin{itemize}
+        \item optimize decisions, not labels
+        \item use simulation to try new actions
+        \item improve long-term outcomes
+        \item learn beyond imitation
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.45cm}
+  \takeaway{Offline RL is the version closest to supervised learning: learn from a fixed dataset, but optimize a policy.}
+  \note{This slide makes the bridge explicit. RL is harder because the learner controls future inputs, rewards arrive late, and unsafe exploration may be unacceptable. But that is also why it is useful: the goal is not label prediction, but better long-run decisions. Offline RL sits closest to supervised learning because the dataset is fixed, while the objective remains policy improvement.}
 \end{frame}
 
 \begin{frame}{Value and Discounting}

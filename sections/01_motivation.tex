@@ -30,7 +30,7 @@
     \draw[->,thick] (pit) -- (route);
     \draw[->,thick] (route) -- (silo);
     \draw[->,thick] (silo) -- (train);
-    \draw[->,thick,SignalGreen,bend left=35] (train.north) to node[above]{new state} (queue.north);
+    \draw[->,thick,SignalGreen] (train.north) .. controls +(0,0.95) and +(0,0.95) .. node[above]{new state} (queue.north);
   \end{tikzpicture}
 
   \vspace{0.45cm}
@@ -41,27 +41,22 @@
   \note{This is the main conceptual gap. Supervised learning assumes a fixed data distribution; a policy changes the states it will see next.}
 \end{frame}
 
-\begin{frame}{Why Imitation Can Fail}
-  \Large
-  A behavior-cloned operator policy may be 99\% accurate at each decision.
-
-  \vspace{0.4cm}
+\begin{frame}{States, Actions, and Policies}
   \centering
-  \begin{tikzpicture}[node distance=0.45cm,>=Latex,scale=0.9,transform shape]
-    \node[draw,rounded corners,fill=Panel,minimum width=2.0cm] (wrong) {wrong silo};
-    \node[draw,rounded corners,fill=Panel,right=of wrong,minimum width=2.0cm] (blend) {bad blend};
-    \node[draw,rounded corners,fill=Panel,right=of blend,minimum width=2.2cm] (handle) {rehandling};
-    \node[draw,rounded corners,fill=Panel,right=of handle,minimum width=2.2cm] (cong) {congestion};
-    \node[draw,rounded corners,fill=Panel,right=of cong,minimum width=2.0cm] (delay) {train delay};
-    \draw[->,thick] (wrong) -- (blend);
-    \draw[->,thick] (blend) -- (handle);
-    \draw[->,thick] (handle) -- (cong);
-    \draw[->,thick] (cong) -- (delay);
-  \end{tikzpicture}
+  \begin{tabular}{p{0.22\textwidth}p{0.65\textwidth}}
+    \toprule
+    \textbf{Object} & \textbf{Grain-terminal example} \\
+    \midrule
+    state $s_t$ & current queue, silo inventory, grain quality, train progress \\
+    action $a_t$ & unload truck, choose pit, route conveyor, assign silo, fill car \\
+    policy $\pi(a\mid s)$ & rule or model that chooses actions from states \\
+    next state $s_{t+1}$ & the facility after the action has changed it \\
+    \bottomrule
+  \end{tabular}
 
-  \vspace{0.45cm}
-  \takeaway{A policy that is locally accurate can still be globally unsafe because it controls its own future inputs.}
-  \note{Introduce behavior cloning intuitively before the formal BC section. One small action error can push the terminal into a state not well represented in the logs, where more errors become likely.}
+  \vspace{0.55cm}
+  \takeaway{A decision problem starts with states, actions, and a policy that maps situations to decisions.}
+  \note{Define the basic vocabulary before imitation learning uses it. State means the information available at decision time. Action means the decision we control. A policy is the rule or learned model that maps states to actions.}
 \end{frame}
 
 \begin{frame}{Why RL Needs More Than Logs}
@@ -88,10 +83,10 @@
   \normalsize
   Logged data:
   \[
-    \text{queue state, pit assignment, routing, silo choice, reward / KPI, next state}
+    (s_t, a_t, \text{outcome}, s_{t+1})
   \]
 
   \vspace{0.2cm}
-  \productbox{This is the bridge from product operations to the control and RL formalism.}
-  \note{Use this as the transition into the control-theory section. We now have states, actions, transitions, costs or rewards, and a policy to improve.}
+  \productbox{This is the bridge from product operations to imitation learning and the RL formalism.}
+  \note{Use this as the transition into imitation learning and then the RL formalism. We now have states, actions, delayed outcomes, and a policy to improve.}
 \end{frame}
