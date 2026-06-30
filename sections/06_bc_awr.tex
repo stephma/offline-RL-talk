@@ -1,6 +1,6 @@
 \section{Behavior Cloning and AWR}
 
-\begin{frame}{Behavior Cloning}
+\begin{frame}{Recall: Behavior Cloning Is the Offline Baseline}
   \Large
   \[
     \mathcal L_{\mathrm{BC}}(\theta)
@@ -11,30 +11,14 @@
 
   \vspace{0.4cm}
   \normalsize
-  Learn to imitate the actions in the dataset.
+  Learn to imitate the actions in the offline dataset.
 
   \vspace{0.3cm}
-  Benefits: stable, simple, scalable, no explicit value learning.
-  \note{Behavior cloning is just supervised learning on logged actions. It is the baseline every offline RL method should beat.}
-\end{frame}
+  It is stable and useful, but it does not use rewards or long-term outcomes.
 
-\begin{frame}{BC Clones All Actions Equally}
-  \centering
-  \begin{tikzpicture}[x=1.2cm,y=0.8cm]
-    \node[left] at (0,3) {action A};
-    \node[left] at (0,2) {action B};
-    \node[left] at (0,1) {action C};
-    \foreach \y in {1,2,3} {
-      \draw[fill=Panel] (0,\y-0.25) rectangle (2.4,\y+0.25);
-    }
-    \node[right] at (2.5,3) {low return};
-    \node[right] at (2.5,2) {medium return};
-    \node[right] at (2.5,1) {high return};
-  \end{tikzpicture}
-
-  \vspace{0.4cm}
-  BC does not know which actions were good. It clones good, mediocre, and bad actions alike.
-  \note{This sets up AWR. BC is stable because it stays in the data, but it does not perform value-aware improvement.}
+  \vspace{0.3cm}
+  Offline RL starts from BC and asks how to improve it without leaving the data support.
+  \note{This is a recall slide, not the first BC introduction. We already discussed BC and its pitfalls. Now frame it as the baseline that AWR, IQL, and IDQL improve on.}
 \end{frame}
 
 \begin{frame}{Advantage-Weighted Regression}
@@ -84,6 +68,6 @@
   It still looks like supervised learning, but the labels are now weighted by long-term value.
 
   \vspace{0.4cm}
-  \productbox{If logs contain good and bad decisions, AWR gives a way to imitate the better ones more.}
+  If logs contain good and bad decisions, AWR gives a way to imitate the better ones more.
   \note{Transition to IQL: AWR needs advantages. IQL is a modern way to learn them in offline data without out-of-distribution maximization.}
 \end{frame}

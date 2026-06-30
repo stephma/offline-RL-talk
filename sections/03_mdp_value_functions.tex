@@ -18,119 +18,50 @@
   \end{itemize}
 
   \vspace{0.2cm}
-  \productbox{The key modeling assumption is that $s_t$ contains enough information to make the next decision.}
+  The key modeling assumption is that $s_t$ contains enough information to make the next decision.
   \note{States, actions, and policies were introduced earlier using the grain terminal example. Here, formalize the MDP by adding stochastic transitions, rewards, and discounting. Emphasize the Markov assumption: the state must contain enough information for decision making.}
 \end{frame}
 
-\begin{frame}{Supervised Learning Setup}
-  \centering
-  \begin{tikzpicture}[node distance=0.8cm,>=Latex]
-    \node[draw,rounded corners,fill=Panel,minimum width=2.8cm,minimum height=0.9cm] (data) {dataset $\dataset$};
-    \node[draw,rounded corners,fill=Panel,right=of data,minimum width=3.0cm,minimum height=0.9cm] (learn) {learning algorithm};
-    \node[draw,rounded corners,fill=Panel,right=of learn,minimum width=2.8cm,minimum height=0.9cm] (model) {model $f_\theta$};
-    \node[draw,rounded corners,fill=Panel,below=of model,minimum width=2.8cm,minimum height=0.9cm] (pred) {prediction $\hat{y}$};
-    \draw[->,thick] (data) -- (learn);
-    \draw[->,thick] (learn) -- (model);
-    \draw[->,thick] (model) -- (pred);
-  \end{tikzpicture}
-
-  \vspace{0.35cm}
-  \[
-    \dataset = \{(x_i,y_i)\}_{i=1}^n,
-    \qquad
-    \theta^\star = \arg\min_\theta \sum_i \ell(f_\theta(x_i),y_i)
-  \]
-
-  \vspace{0.2cm}
-  \normalsize
-  The model predicts labels from a fixed dataset.
-  \note{Use this as the contrast case. In supervised learning, the data is fixed, the labels are given, and the model is trained to predict. The model does not choose actions that change the future data distribution.}
-\end{frame}
-
-\begin{frame}{Agent-Environment Loop}
-  \centering
-  \begin{tikzpicture}[node distance=1.4cm,>=Latex]
-    \node[draw,rounded corners,fill=Panel,minimum width=3cm,minimum height=1cm] (agent) {agent / policy $\pi$};
-    \node[draw,rounded corners,fill=Panel,right=3.2cm of agent,minimum width=3cm,minimum height=1cm] (env) {environment};
-    \draw[->,thick] (agent) -- node[above] {$a_t$} (env);
-    \draw[->,thick] (env.south) -- ++(0,-1.0) -| node[pos=0.25,below] {$s_{t+1}, r_t$} (agent.south);
-  \end{tikzpicture}
-
-  \vspace{0.55cm}
-  \begin{itemize}
-    \item \textbf{Agent:} chooses the next action from the current state.
-    \item \textbf{Environment:} the facility or simulation that returns the next state and reward.
-    \item \textbf{Key contrast:} supervised learning predicts from fixed data; RL actions create the next data.
-  \end{itemize}
-  \note{This diagram clarifies the closed loop. The policy changes the data distribution by choosing actions. In this talk, the environment is either the physical grain facility or a simulator of that facility.}
-\end{frame}
-
-\begin{frame}{What RL Adds}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.48\textwidth}
-      \textbf{Challenges}
-      \vspace{0.2cm}
-      \begin{itemize}
-        \item actions change future states
-        \item rewards can be delayed
-        \item errors compound over time
-        \item exploration can be risky
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \textbf{Opportunities}
-      \vspace{0.2cm}
-      \begin{itemize}
-        \item optimize decisions, not labels
-        \item use simulation to try new actions
-        \item improve long-term outcomes
-        \item learn beyond imitation
-      \end{itemize}
-    \end{column}
-  \end{columns}
-
-  \vspace{0.45cm}
-  \takeaway{Offline RL is the version closest to supervised learning: learn from a fixed dataset, but optimize a policy.}
-  \note{This slide makes the bridge explicit. RL is harder because the learner controls future inputs, rewards arrive late, and unsafe exploration may be unacceptable. But that is also why it is useful: the goal is not label prediction, but better long-run decisions. Offline RL sits closest to supervised learning because the dataset is fixed, while the objective remains policy improvement.}
-\end{frame}
-
-\begin{frame}{Value and Discounting}
+\begin{frame}{Return and Discounting}
   \Large
-  The value of a state is expected discounted reward:
+  Return is the total discounted reward from time $t$:
 
   \[
-    V^\pi(s)
-    =
-    \mathbb E_\pi
-    \left[
-      \sum_{k=0}^{\infty} \gamma^k r_{t+k}
-      \,\middle|\, s_t=s
-    \right]
+    G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k},
+    \qquad 0 < \gamma < 1.
   \]
 
   \vspace{0.25cm}
   \normalsize
-  The discount factor $0 < \gamma < 1$ controls how much the agent plans ahead.
+  The discount factor controls how farsighted the policy is.
 
   \vspace{0.25cm}
   \begin{itemize}
-    \item small $\gamma$: more myopic, closer to greedy behavior
+    \item small $\gamma$: more myopic, closer to optimizing the next railcar
     \item large $\gamma$: more weight on delayed consequences
     \item finance analogy: like net present value, rewards today count more than equal future rewards
-    \item grain loading: a greedy fill policy optimizes each railcar; a farsighted policy optimizes the entire train
+    \item grain loading: a greedy policy optimizes each railcar; a farsighted policy optimizes the entire train
   \end{itemize}
 
-  \note{Define value directly as expected discounted reward, avoiding a separate return concept. A greedy agent grabs reward as soon as it appears, like an animal taking food immediately. A more planning agent may delay reward to improve future outcomes. Humans often plan over longer horizons. Connect this to net present value in finance: money today is worth more than the same nominal payoff later. In grain loading, a greedy fill policy optimizes each railcar independently, while a farsighted policy optimizes the whole train and the contract across all cars. Gamma is the knob that controls this tradeoff.}
+  \note{Define return as the discounted sum of future rewards. Gamma is the planning horizon knob. Small gamma acts greedily; large gamma allows the policy to accept a locally suboptimal fill decision if it improves the full train, the contract, or later congestion.}
 \end{frame}
 
 \begin{frame}{$V$, $Q$, and Advantage}
   \begin{align*}
-    Q^\pi(s,a) &= \text{value of taking }a\text{ in }s\text{, then following }\pi \\
+    V^\pi(s) &= \mathbb E_\pi[G_t \mid s_t=s] \\
+    Q^\pi(s,a) &= \mathbb E_\pi[G_t \mid s_t=s,a_t=a] \\
     A^\pi(s,a) &= Q^\pi(s,a) - V^\pi(s)
   \end{align*}
 
   \vspace{0.3cm}
-  \takeaway{Advantage asks: was this action better or worse than the policy's usual action in the same state?}
+  \begin{itemize}
+    \item $V$: how good is this state?
+    \item $Q$: how good is this action in this state?
+    \item $A$: was this action better than usual here?
+  \end{itemize}
+
+  \vspace{0.2cm}
+  Advantage asks: was this action better or worse than the policy's usual action in the same state?
   \note{Advantage is the bridge to AWR, IQL, and IDQL. Make sure this concept lands.}
 \end{frame}
 
@@ -145,6 +76,72 @@
   The value of an action is immediate reward plus the value of where it takes us.
 
   \vspace{0.4cm}
-  \productbox{Bellman recursion is the RL version of cost-to-go recursion in optimal control.}
+  Bellman recursion is the RL version of cost-to-go recursion in optimal control.
   \note{Connect explicitly back to dynamic programming. This equation is the skeleton underneath most of the algorithms later.}
+\end{frame}
+
+\begin{frame}{From Value to Action: Learn $Q(s,a)$}
+  \Large
+  If we know $Q(s,a)$, we can compare actions in the same state.
+
+  \vspace{0.35cm}
+  \[
+    \text{choose the action with the highest predicted long-term value}
+  \]
+
+  \vspace{0.35cm}
+  \normalsize
+  This is why many RL algorithms learn an action-value function.
+  \note{This slide bridges value functions to action selection. V tells us how good a state is; Q tells us which action to take.}
+\end{frame}
+
+\begin{frame}{Q-Learning Update}
+  \Large
+  A one-step target for $Q$:
+  \[
+    Q(s_t,a_t)
+    \leftarrow
+    r_t + \gamma \max_{a'} Q(s_{t+1},a')
+  \]
+
+  \vspace{0.3cm}
+  \normalsize
+  Immediate reward plus the best predicted value at the next state.
+  \note{Introduce the core Q-learning backup. Do not dwell on stochastic approximation details. The important part is that the max turns value learning into policy improvement.}
+\end{frame}
+
+\begin{frame}{Greedy Policy Improvement}
+  \Large
+  Once we have $Q$, improve the policy by acting greedily:
+  \[
+    \pi_{\mathrm{new}}(s)
+    =
+    \arg\max_a Q(s,a)
+  \]
+
+  \vspace{0.35cm}
+  \normalsize
+  This is the basic RL loop:
+  \[
+    \text{estimate values} \rightarrow \text{choose better actions}.
+  \]
+  \note{Make the policy improvement idea explicit before discussing why it is dangerous offline.}
+\end{frame}
+
+\begin{frame}{Why Q-Learning Is Dangerous Offline}
+  \Large
+  Offline data only covers some actions.
+
+  \vspace{0.35cm}
+  \[
+    \max_a Q(s,a)
+  \]
+
+  \vspace{0.25cm}
+  \normalsize
+  The max may select an action the dataset barely supports, where $Q$ is just a guess.
+
+  \vspace{0.25cm}
+  \takeaway{The same maximization that improves policies online can exploit value errors offline.}
+  \note{This is the teaser for the offline RL section. Later, support mismatch and IQL will make this precise.}
 \end{frame}

@@ -37,7 +37,7 @@
   Choosing a truck, pit, route, or silo changes future queues, storage, blending options, and train schedules.
 
   \vspace{0.25cm}
-  \productbox{In RL, the model does not just observe the data distribution. It helps create the next data distribution.}
+  \takeaway{In RL, the model does not just observe the data distribution. It helps create the next data distribution.}
   \note{This is the main conceptual gap. Supervised learning assumes a fixed data distribution; a policy changes the states it will see next.}
 \end{frame}
 
@@ -55,38 +55,24 @@
   \end{tabular}
 
   \vspace{0.55cm}
-  \takeaway{A decision problem starts with states, actions, and a policy that maps situations to decisions.}
+  A decision problem starts with states, actions, and a policy that maps situations to decisions.
   \note{Define the basic vocabulary before imitation learning uses it. State means the information available at decision time. Action means the decision we control. A policy is the rule or learned model that maps states to actions.}
 \end{frame}
 
-\begin{frame}{Why RL Needs More Than Logs}
+\begin{frame}{Agent-Environment Loop}
   \centering
-  \begin{tikzpicture}[node distance=0.9cm,>=Latex]
-    \node[draw,rounded corners,fill=Panel,minimum width=3.3cm,minimum height=0.9cm] (sim) {simulator available};
-    \node[draw,rounded corners,fill=Panel,right=2.0cm of sim,minimum width=3.3cm,minimum height=0.9cm] (logs) {logs only};
-    \node[below=0.35cm of sim,text width=3.5cm,align=center] {try novel actions\\estimate consequences};
-    \node[below=0.35cm of logs,text width=3.5cm,align=center] {improve cautiously\\stay near support};
-    \draw[->,thick,SignalGreen] (sim.south) -- ++(0,-0.6);
-    \draw[->,thick,SignalGreen] (logs.south) -- ++(0,-0.6);
+  \begin{tikzpicture}[node distance=1.4cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=3cm,minimum height=1cm] (agent) {agent / policy $\pi$};
+    \node[draw,rounded corners,fill=Panel,right=3.2cm of agent,minimum width=3cm,minimum height=1cm] (env) {environment};
+    \draw[->,thick] (agent) -- node[above] {$a_t$} (env);
+    \draw[->,thick] (env.south) -- ++(0,-1.0) -| node[pos=0.25,below] {$s_{t+1}, r_t$} (agent.south);
   \end{tikzpicture}
 
-  \vspace{1.0cm}
-  \takeaway{RL is about policy improvement, not just action prediction.}
-  \note{This sets up the later offline RL material. If we have a simulator, RL can evaluate counterfactual actions. If we only have logs, offline RL must improve while respecting dataset support.}
-\end{frame}
-
-\begin{frame}{The RL Question}
-  \Large
-  Given logged grain-terminal decisions and delayed outcomes, can we learn a better policy without risky online experimentation?
-
-  \vspace{0.6cm}
-  \normalsize
-  Logged data:
-  \[
-    (s_t, a_t, \text{outcome}, s_{t+1})
-  \]
-
-  \vspace{0.2cm}
-  \productbox{This is the bridge from product operations to imitation learning and the RL formalism.}
-  \note{Use this as the transition into imitation learning and then the RL formalism. We now have states, actions, delayed outcomes, and a policy to improve.}
+  \vspace{0.55cm}
+  \begin{itemize}
+    \item \textbf{Agent:} chooses the next action from the current state.
+    \item \textbf{Environment:} the facility or simulation that returns the next state and reward.
+    \item \textbf{Key contrast:} supervised learning predicts from fixed data; RL actions create the next data.
+  \end{itemize}
+  \note{This diagram clarifies the closed loop before imitation learning. The policy changes the data distribution by choosing actions. In this talk, the environment is either the physical grain facility or a simulator of that facility.}
 \end{frame}

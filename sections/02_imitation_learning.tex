@@ -2,31 +2,43 @@
 
 \begin{frame}{Imitation Learning: Turn Decisions Into Supervised Learning}
   \large
-  Given this situation, what would the operator usually do?
+  First idea: collect observed behavior and train a policy to predict what the operator would do.
 
-  \vspace{0.15cm}
+  \vspace{0.12cm}
   \normalsize
+  Historical demonstrations come from a \alert{behavior policy}, e.g. human terminal operators:
   \[
     \dataset = \{(s_t,a_t)\},
     \qquad
-    \tau = (s_1,a_1,\ldots,s_T,a_T)
-  \]
-  \[
-    \mathcal L_{\mathrm{BC}}(\theta)
-    =
-    -\mathbb E_{(s,a)\sim\dataset}
-    \left[\log \pi_\theta(a\mid s)\right]
+    a_t \sim \mu(a\mid s_t)
   \]
 
-  \vspace{0.05cm}
-  For deterministic continuous actions, use regression:
-  \[
-    \min_\theta\ \mathbb E\left[\|a-\pi_\theta(s)\|^2\right]
-  \]
+  \vspace{0.02cm}
+  Train $\pi_\theta$ as a supervised action predictor:
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \textbf{Continuous actions}\\[-0.1cm]
+      {\small steering angle, conveyor speed}
+      \[
+        \min_\theta\
+        \mathbb E_{\dataset}
+        \left[\|a-\pi_\theta(s)\|^2\right]
+      \]
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Discrete actions}\\[-0.1cm]
+      {\small route choice, silo assignment}
+      \[
+        \min_\theta\
+        -\mathbb E_{\dataset}
+        \left[\log \pi_\theta(a\mid s)\right]
+      \]
+    \end{column}
+  \end{columns}
 
-  \vspace{0.05cm}
-  \productbox{Attractive because it is fully offline, simple to train, and does not require defining a reward function.}
-  \note{This is the baseline everyone should think of first. Before asking for RL, ask whether behavior cloning is enough. It is just supervised learning on demonstrated decisions: given this situation, predict what the operator did.}
+  \vspace{0.1cm}
+  Attractive because it is fully offline, simple to train, and does not require defining a reward.
+  \note{This is the baseline everyone should think of first. We collect states and actions from a behavior policy, such as human operators, and train a new policy to predict those actions. Continuous controls become regression problems; discrete decisions become classification problems. The attraction is that this looks almost exactly like standard supervised learning.}
 \end{frame}
 
 \begin{frame}{Pitfall 1: Averaging Demonstrations Can Fail}
@@ -75,20 +87,28 @@
   \note{Use the driving image and action-density plot together. The training set can contain two valid behaviors for similar observed states: staying in lane and changing lanes. Squared-error regression treats these as noisy labels around one target and learns the mean. But the mean action may be a poor steering command that no driver demonstrated. This motivates richer policy distributions such as mixtures, autoregressive policies, or diffusion policies later.}
 \end{frame}
 
-\begin{frame}{Pitfall 2: Small Mistakes Compound}
-  \large
-  In supervised learning, errors do not change the next input.
+\begin{frame}{Pitfall 2: Imitation Is Dangerous Offline}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.43\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.46\textheight,keepaspectratio]{assets/car-ridge-road.png}
+    \end{column}
+    \begin{column}{0.53\textwidth}
+      \large
+      In behavior cloning, actions change the next input:
+      \[
+        p_{\mathrm{expert}}(s) \neq p_{\pi}(s)
+      \]
 
-  \vspace{0.15cm}
-  \normalsize
-  In behavior cloning, actions change future states:
-  \[
-    p_{\mathrm{expert}}(s) \neq p_{\pi}(s)
-  \]
+      \vspace{0.1cm}
+      \normalsize
+      Expert logs mostly show normal states, not recovery states.
+    \end{column}
+  \end{columns}
 
-  \vspace{0.15cm}
+  \vspace{0.25cm}
   \centering
-  \begin{tikzpicture}[node distance=0.3cm,>=Latex,scale=0.86,transform shape]
+  \begin{tikzpicture}[node distance=0.25cm,>=Latex,scale=0.82,transform shape]
     \node[draw,rounded corners,fill=Panel,minimum width=2.0cm] (err1) {small error};
     \node[draw,rounded corners,fill=Panel,right=of err1,minimum width=2.2cm] (state) {new state};
     \node[draw,rounded corners,fill=Panel,right=of state,minimum width=2.0cm] (err2) {larger error};
@@ -101,12 +121,67 @@
   \end{tikzpicture}
 
   \vspace{0.2cm}
-  One classical fix is DAgger: roll out the learned policy, ask the expert for corrections, and aggregate the new data.
+  \normalsize
+  Offline logs often underrepresent near-misses, recovery maneuvers, and failures.
 
-  \vspace{0.08cm}
-  \productbox{Offline logs often underrepresent recovery states, rare failures, and near-miss conditions.}
+  \vspace{0.1cm}
+  \textbf{Classical fix:} DAgger rolls out the learned policy, asks the expert for corrections, and aggregates the new data.
+  \note{Use the ridge-road image to make covariate shift visceral. Expert demonstrations mostly show successful centered driving, not the states induced after a small drift toward danger. Since the learned policy controls its own future inputs, errors compound. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy. This motivates RL as more than action prediction.}
+\end{frame}
 
-  \vspace{0.08cm}
-  \textbf{Transition:} Behavior cloning asks what action was likely in the logs. RL asks which action led to better long-term outcomes.
-  \note{Use a self-driving analogy: human demonstrations mostly show centered lane driving. A learned policy drifts slightly, then sees off-center states that are rare in the dataset, then errors compound. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy. This motivates RL as more than action prediction.}
+\begin{frame}{Pitfall 3: BC Clones All Actions Equally}
+  \centering
+  \begin{tikzpicture}[x=1.2cm,y=0.8cm]
+    \node[left] at (0,3) {action A};
+    \node[left] at (0,2) {action B};
+    \node[left] at (0,1) {action C};
+    \foreach \y in {1,2,3} {
+      \draw[fill=Panel] (0,\y-0.25) rectangle (2.4,\y+0.25);
+    }
+    \node[right] at (2.5,3) {low return};
+    \node[right] at (2.5,2) {medium return};
+    \node[right] at (2.5,1) {high return};
+  \end{tikzpicture}
+
+  \vspace{0.4cm}
+  BC learns what operators did, not which decisions created the best long-term outcomes.
+  \note{This is the third limitation of imitation learning. Even if the action distribution is expressive and compounding errors are controlled, behavior cloning still imitates good, mediocre, and bad decisions unless it has a value signal.}
+\end{frame}
+
+\begin{frame}{The RL Question}
+  \Large
+  Given logged grain-terminal decisions and delayed outcomes, can we learn a better policy without risky online experimentation?
+
+  \vspace{0.6cm}
+  \normalsize
+  Logged data:
+  \[
+    (s_t, a_t, \text{outcome}, s_{t+1})
+  \]
+
+  \vspace{0.2cm}
+  This is the bridge from imitation learning to reinforcement learning.
+  \note{Use this as the transition from behavior cloning to RL. BC asks what action was likely in the logs. RL asks which actions led to better long-term outcomes.}
+\end{frame}
+
+\begin{frame}{Rewards: Turning Product Outcomes Into a Learning Signal}
+  \Large
+  A reward turns delayed product outcomes into feedback for decisions:
+
+  \[
+    r_t = r(s_t,a_t,s_{t+1})
+  \]
+
+  \vspace{0.25cm}
+  \normalsize
+  For grain loading, rewards can combine:
+  \begin{itemize}
+    \item train loading progress and throughput
+    \item contract quality satisfaction
+    \item penalties for rehandling, congestion, and delay
+  \end{itemize}
+
+  \vspace{0.2cm}
+  Rewards tell the learner what outcomes matter, not just what actions were taken.
+  \note{This slide gives the missing bridge from logged outcomes to RL. A reward is a modeling choice: it translates product objectives and operational costs into a scalar signal that can be optimized over time.}
 \end{frame}
