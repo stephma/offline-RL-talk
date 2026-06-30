@@ -6,11 +6,11 @@
 
   \vspace{0.12cm}
   \normalsize
-  Historical demonstrations come from a \alert{behavior policy}, e.g. human terminal operators:
+  Historical demonstrations come from a \alert{behavior policy} $\pi_b$, e.g. human terminal operators:
   \[
     \dataset = \{(s_t,a_t)\},
     \qquad
-    a_t \sim \mu(a\mid s_t)
+    a_t \sim \pi_b(a\mid s_t)
   \]
 
   \vspace{0.02cm}
@@ -38,7 +38,7 @@
 
   \vspace{0.1cm}
   Attractive because it is fully offline, simple to train, and does not require defining a reward.
-  \note{This is the baseline everyone should think of first. We collect states and actions from a behavior policy, such as human operators, and train a new policy to predict those actions. Continuous controls become regression problems; discrete decisions become classification problems. The attraction is that this looks almost exactly like standard supervised learning.}
+  \note{This is the baseline everyone should think of first. We collect states and actions from a behavior policy pi-b, such as human operators, and train a new policy to predict those actions. Continuous controls become regression problems; discrete decisions become classification problems. The attraction is that this looks almost exactly like standard supervised learning.}
 \end{frame}
 
 \begin{frame}{Pitfall 1: Averaging Demonstrations Can Fail}
@@ -95,14 +95,17 @@
     \end{column}
     \begin{column}{0.53\textwidth}
       \large
-      In behavior cloning, actions change the next input:
+      A supervised policy is trained on operator logs.
+
+      \vspace{0.18cm}
+      \normalsize
+      But once deployed, its actions change the state distribution:
       \[
-        p_{\mathrm{expert}}(s) \neq p_{\pi}(s)
+        p_{\mathrm{train}}(s) \neq p_{\mathrm{learned}}(s)
       \]
 
-      \vspace{0.1cm}
-      \normalsize
-      Expert logs mostly show normal states, not recovery states.
+      \vspace{0.04cm}
+      Small errors can move the system into states that were rare or absent in training.
     \end{column}
   \end{columns}
 
@@ -122,14 +125,14 @@
 
   \vspace{0.2cm}
   \normalsize
-  Offline logs often underrepresent near-misses, recovery maneuvers, and failures.
+  Offline imitation is dangerous because subtle distribution shifts can compound.
 
   \vspace{0.1cm}
   \textbf{Classical fix:} DAgger rolls out the learned policy, asks the expert for corrections, and aggregates the new data.
-  \note{Use the ridge-road image to make covariate shift visceral. Expert demonstrations mostly show successful centered driving, not the states induced after a small drift toward danger. Since the learned policy controls its own future inputs, errors compound. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy. This motivates RL as more than action prediction.}
+  \note{Use the ridge-road image to make covariate shift visceral. A policy trained in a supervised fashion is not guaranteed to reproduce the operator. Once deployed, its actions affect the next state, and therefore the future inputs to the model. Small deviations can push it into states that were rare or absent in the logs, where it may make larger errors. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy.}
 \end{frame}
 
-\begin{frame}{Pitfall 3: BC Clones All Actions Equally}
+\begin{frame}{Pitfall 3: Behavior Cloning Clones All Actions Equally}
   \centering
   \begin{tikzpicture}[x=1.2cm,y=0.8cm]
     \node[left] at (0,3) {action A};
@@ -143,25 +146,39 @@
     \node[right] at (2.5,1) {high return};
   \end{tikzpicture}
 
-  \vspace{0.4cm}
-  BC learns what operators did, not which decisions created the best long-term outcomes.
-  \note{This is the third limitation of imitation learning. Even if the action distribution is expressive and compounding errors are controlled, behavior cloning still imitates good, mediocre, and bad decisions unless it has a value signal.}
+  \vspace{0.28cm}
+  \large
+  Behavior cloning / imitation learning treats each demonstrated action as a target label.
+
+  \vspace{0.12cm}
+  \normalsize
+  It learns what operators did, not which decisions created the best long-term outcomes.
+
+  \vspace{0.12cm}
+  Later, we will learn to reweight good and bad demonstrations differently.
+  \note{This is the third limitation of imitation learning. Even if the action distribution is expressive and compounding errors are controlled, behavior cloning still imitates good, mediocre, and bad decisions unless it has a value signal. This sets up advantage-weighted regression: keep the supervised-learning structure, but weight demonstrations by how good they were.}
 \end{frame}
 
-\begin{frame}{The RL Question}
+\begin{frame}{The Offline RL Question}
   \Large
   Given logged grain-terminal decisions and delayed outcomes, can we learn a better policy without risky online experimentation?
 
-  \vspace{0.6cm}
+  \vspace{0.42cm}
   \normalsize
   Logged data:
   \[
-    (s_t, a_t, \text{outcome}, s_{t+1})
+    (s_t, a_t, r_t, s_{t+1})
   \]
 
-  \vspace{0.2cm}
-  This is the bridge from imitation learning to reinforcement learning.
-  \note{Use this as the transition from behavior cloning to RL. BC asks what action was likely in the logs. RL asks which actions led to better long-term outcomes.}
+  \vspace{0.05cm}
+  \begin{itemize}
+    \item imitation learning asks: what action was likely in the logs?
+    \item offline RL asks: which actions led to better long-term outcomes?
+  \end{itemize}
+
+  \vspace{0.12cm}
+  This talk focuses on offline RL: policy improvement from fixed data.
+  \note{Use this as the transition from behavior cloning to offline RL. Behavior cloning predicts the logged operator action. Offline RL uses logged rewards and next states to ask which actions improved long-term outcomes, while avoiding risky online exploration. This is the main focus of the presentation.}
 \end{frame}
 
 \begin{frame}{Rewards: Turning Product Outcomes Into a Learning Signal}

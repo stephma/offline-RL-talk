@@ -10,14 +10,14 @@
   \vspace{0.2cm}
   Behavior policy:
   \[
-    \mu(a \mid s)
+    \pi_b(a \mid s)
   \]
 
   \vspace{0.2cm}
   Goal: learn $\pi(a \mid s)$ without online interaction during training.
 
   Logged data source: terminal operator logs. Action space: truck selection, pit assignment, conveyor route, silo, and loading schedule.
-  \note{Define offline RL cleanly. The data was collected by some behavior policy, often not known exactly. Emphasize that this is policy improvement under support constraints, not supervised learning.}
+  \note{Define offline RL cleanly. The data was collected by a behavior policy pi-b, often not known exactly. Emphasize that this is policy improvement under support constraints, not supervised learning.}
 \end{frame}
 
 \begin{frame}{Support Mismatch}
@@ -36,7 +36,7 @@
 
   \vspace{0.6cm}
   The policy may choose an unsupported action where the value estimate is unreliable.
-  \note{This is the core offline RL failure mode. The dataset covers actions near the behavior policy, but maximization may select an action far away.}
+  \note{This is the core offline RL failure mode. The dataset covers actions near the behavior policy pi-b, but maximization may select an action far away.}
 \end{frame}
 
 \begin{frame}{Why Naive Q-Learning Fails Offline}

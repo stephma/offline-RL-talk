@@ -92,11 +92,11 @@
     \draw[->,thick] (noise) -- (step1);
     \draw[->,thick] (step1) -- (step2);
     \draw[->,thick] (step2) -- (action);
-    \node[below=0.25cm of step1] {$p_\psi(a_{k-1}\mid a_k,s)$};
+    \node[below=0.25cm of step1] {$\pi_\psi(a_{k-1}\mid a_k,s)$};
   \end{tikzpicture}
 
   \vspace{0.5cm}
-  A diffusion policy represents $p_\psi(a\mid s)$ as an iterative conditional generation process \cite{chi2023diffusionpolicy}.
+  A diffusion policy represents $\pi_\psi(a\mid s)$ as an iterative conditional generation process \cite{chi2023diffusionpolicy}.
 
   \vspace{0.3cm}
   Instead of predicting one mean action, it can sample diverse plausible actions.
