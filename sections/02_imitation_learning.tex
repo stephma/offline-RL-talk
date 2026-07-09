@@ -87,76 +87,79 @@
   \note{Use the driving image and action-density plot together. The training set can contain two valid behaviors for similar observed states: staying in lane and changing lanes. Squared-error regression treats these as noisy labels around one target and learns the mean. But the mean action may be a poor steering command that no driver demonstrated. This motivates richer policy distributions such as mixtures, autoregressive policies, or diffusion policies later.}
 \end{frame}
 
-\begin{frame}{Pitfall 2: Imitation Is Dangerous Offline}
+\begin{frame}{Pitfall 2: Errors Accumulate Over Time}
   \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.43\textwidth}
+    \begin{column}{0.48\textwidth}
       \centering
-      \includegraphics[width=\linewidth,height=0.46\textheight,keepaspectratio]{assets/car-ridge-road.png}
+      \includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{assets/car-ridge-road.png}
     \end{column}
-    \begin{column}{0.53\textwidth}
-      \large
-      A supervised policy is trained on operator logs.
-
-      \vspace{0.18cm}
-      \normalsize
-      But once deployed, its actions change the state distribution:
-      \[
-        p_{\mathrm{train}}(s) \neq p_{\mathrm{learned}}(s)
-      \]
-
-      \vspace{0.04cm}
-      Small errors can move the system into states that were rare or absent in training.
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=0.23cm,>=Latex]
+        \tikzset{
+          driftstep/.style={
+            draw,
+            rounded corners,
+            fill=Panel,
+            text width=0.82\linewidth,
+            minimum height=0.78cm,
+            align=center
+          }
+        }
+        \node[driftstep] (t0) {$t$: small error};
+        \node[driftstep,below=of t0] (t1) {$t{+}1$: shifted state};
+        \node[driftstep,below=of t1] (t2) {$t{+}2$: bigger error};
+        \node[driftstep,below=of t2] (t3) {$t{+}3$: unfamiliar state};
+        \draw[->,thick] (t0) -- (t1);
+        \draw[->,thick] (t1) -- (t2);
+        \draw[->,thick] (t2) -- (t3);
+      \end{tikzpicture}
     \end{column}
   \end{columns}
 
-  \vspace{0.25cm}
-  \centering
-  \begin{tikzpicture}[node distance=0.25cm,>=Latex,scale=0.82,transform shape]
-    \node[draw,rounded corners,fill=Panel,minimum width=2.0cm] (err1) {small error};
-    \node[draw,rounded corners,fill=Panel,right=of err1,minimum width=2.2cm] (state) {new state};
-    \node[draw,rounded corners,fill=Panel,right=of state,minimum width=2.0cm] (err2) {larger error};
-    \node[draw,rounded corners,fill=Panel,right=of err2,minimum width=2.4cm] (ood) {OOD state};
-    \node[draw,rounded corners,fill=Panel,right=of ood,minimum width=1.8cm] (fail) {failure};
-    \draw[->,thick] (err1) -- (state);
-    \draw[->,thick] (state) -- (err2);
-    \draw[->,thick] (err2) -- (ood);
-    \draw[->,thick] (ood) -- (fail);
-  \end{tikzpicture}
+  \vspace{0.24cm}
+  \large
+  A policy trained only on expert states may not know how to recover from states caused by its own mistakes.
 
-  \vspace{0.2cm}
+  \vspace{0.12cm}
   \normalsize
-  Offline imitation is dangerous because subtle distribution shifts can compound.
+  \begin{itemize}
+    \item $\rightarrow$ Distribution shift: deployment samples from the learned policy's state distribution, not the expert's.
+  \end{itemize}
 
-  \vspace{0.1cm}
-  \textbf{Classical fix:} DAgger rolls out the learned policy, asks the expert for corrections, and aggregates the new data.
-  \note{Use the ridge-road image to make covariate shift visceral. A policy trained in a supervised fashion is not guaranteed to reproduce the operator. Once deployed, its actions affect the next state, and therefore the future inputs to the model. Small deviations can push it into states that were rare or absent in the logs, where it may make larger errors. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy.}
+  \vspace{0.04cm}
+  \textbf{Problem:} one-step prediction errors can look small while long rollouts become unstable.
+  \note{Use the ridge-road image to make compounding error visceral. Behavior cloning is trained one step at a time on expert states, but deployment is sequential. If the learned policy is slightly off at time t, the next observation may be shifted away from the expert trajectory. The model is then asked to act on a state it was not trained for, which can create an even larger error at the next step. DAgger is the standard intervention-style fix: collect expert labels on states induced by the learned policy.}
 \end{frame}
 
-\begin{frame}{Pitfall 3: Behavior Cloning Clones All Actions Equally}
+\begin{frame}{Pitfall 3: Imitation Ignores Outcomes}
+  \large
+  Behavior cloning asks only:
+
+  \vspace{0.12cm}
   \centering
-  \begin{tikzpicture}[x=1.2cm,y=0.8cm]
-    \node[left] at (0,3) {action A};
-    \node[left] at (0,2) {action B};
-    \node[left] at (0,1) {action C};
-    \foreach \y in {1,2,3} {
-      \draw[fill=Panel] (0,\y-0.25) rectangle (2.4,\y+0.25);
-    }
-    \node[right] at (2.5,3) {low return};
-    \node[right] at (2.5,2) {medium return};
-    \node[right] at (2.5,1) {high return};
-  \end{tikzpicture}
+  \Large
+  ``What action was taken in this situation?''
 
   \vspace{0.28cm}
+  \raggedright
   \large
-  Behavior cloning / imitation learning treats each demonstrated action as a target label.
+  It does not ask:
 
   \vspace{0.12cm}
+  \centering
+  \Large
+  ``Which action led to the best long-term outcome?''
+
+  \vspace{0.28cm}
+  \raggedright
   \normalsize
-  It learns what operators did, not which decisions created the best long-term outcomes.
+  Every logged decision becomes a training example.
+  The quality of the outcome does not change how strongly it is learned.
 
-  \vspace{0.12cm}
-  Later, we will learn to reweight good and bad demonstrations differently.
-  \note{This is the third limitation of imitation learning. Even if the action distribution is expressive and compounding errors are controlled, behavior cloning still imitates good, mediocre, and bad decisions unless it has a value signal. This sets up advantage-weighted regression: keep the supervised-learning structure, but weight demonstrations by how good they were.}
+  \vspace{0.14cm}
+  \textbf{Problem:} behavior cloning reproduces past decisions, but it cannot prefer decisions with better long-term consequences.
+  \note{This is the third limitation of imitation learning. Even if the action distribution is expressive and compounding errors are controlled, behavior cloning still has no signal for which logged choices led to better outcomes. It treats the dataset as behavior to reproduce, not evidence for which actions were valuable. This sets up advantage-weighted regression: keep the supervised-learning structure, but weight demonstrations by how good they were.}
 \end{frame}
 
 \begin{frame}{The Offline RL Question}
