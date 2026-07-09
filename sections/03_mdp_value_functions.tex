@@ -22,49 +22,6 @@
   \note{States, actions, and policies were introduced earlier using the grain terminal example. Here, formalize the MDP by adding stochastic transitions, rewards, and discounting. Emphasize the Markov assumption: the state must contain enough information for decision making.}
 \end{frame}
 
-\begin{frame}{Return and Discounting}
-  \Large
-  Return is the total discounted reward from time $t$:
-
-  \[
-    G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k},
-    \qquad 0 < \gamma < 1.
-  \]
-
-  \vspace{0.25cm}
-  \normalsize
-  The discount factor controls how farsighted the policy is.
-
-  \vspace{0.25cm}
-  \begin{itemize}
-    \item small $\gamma$: more myopic, closer to optimizing the next railcar
-    \item large $\gamma$: more weight on delayed consequences
-    \item finance analogy: like net present value, rewards today count more than equal future rewards
-    \item grain loading: a greedy policy optimizes each railcar; a farsighted policy optimizes the entire train
-  \end{itemize}
-
-  \note{Define return as the discounted sum of future rewards. Gamma is the planning horizon knob. Small gamma acts greedily; large gamma allows the policy to accept a locally suboptimal fill decision if it improves the full train, the contract, or later congestion.}
-\end{frame}
-
-\begin{frame}{$V$, $Q$, and Advantage}
-  \begin{align*}
-    V^\pi(s) &= \mathbb E_\pi[G_t \mid s_t=s] \\
-    Q^\pi(s,a) &= \mathbb E_\pi[G_t \mid s_t=s,a_t=a] \\
-    A^\pi(s,a) &= Q^\pi(s,a) - V^\pi(s)
-  \end{align*}
-
-  \vspace{0.3cm}
-  \begin{itemize}
-    \item $V$: how good is this state?
-    \item $Q$: how good is this action in this state?
-    \item $A$: was this action better than usual here?
-  \end{itemize}
-
-  \vspace{0.2cm}
-  Advantage asks: was this action better or worse than the policy's usual action in the same state?
-  \note{Advantage is the bridge to AWR, IQL, and IDQL. Make sure this concept lands.}
-\end{frame}
-
 \begin{frame}{Bellman Thinking}
   \Large
   \[

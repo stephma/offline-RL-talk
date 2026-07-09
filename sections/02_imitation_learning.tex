@@ -162,29 +162,7 @@
   \note{This is the third limitation of imitation learning. Even if the action distribution is expressive and compounding errors are controlled, behavior cloning still has no signal for which logged choices led to better outcomes. It treats the dataset as behavior to reproduce, not evidence for which actions were valuable. This sets up advantage-weighted regression: keep the supervised-learning structure, but weight demonstrations by how good they were.}
 \end{frame}
 
-\begin{frame}{The Offline RL Question}
-  \Large
-  Given logged grain-terminal decisions and delayed outcomes, can we learn a better policy without risky online experimentation?
-
-  \vspace{0.42cm}
-  \normalsize
-  Logged data:
-  \[
-    (s_t, a_t, r_t, s_{t+1})
-  \]
-
-  \vspace{0.05cm}
-  \begin{itemize}
-    \item imitation learning asks: what action was likely in the logs?
-    \item offline RL asks: which actions led to better long-term outcomes?
-  \end{itemize}
-
-  \vspace{0.12cm}
-  This talk focuses on offline RL: policy improvement from fixed data.
-  \note{Use this as the transition from behavior cloning to offline RL. Behavior cloning predicts the logged operator action. Offline RL uses logged rewards and next states to ask which actions improved long-term outcomes, while avoiding risky online exploration. This is the main focus of the presentation.}
-\end{frame}
-
-\begin{frame}{Rewards: Turning Product Outcomes Into a Learning Signal}
+\begin{frame}{Rewards Measure the Consequences of Decisions}
   \Large
   A reward turns delayed product outcomes into feedback for decisions:
 
@@ -204,4 +182,89 @@
   \vspace{0.2cm}
   Rewards tell the learner what outcomes matter, not just what actions were taken.
   \note{This slide gives the missing bridge from logged outcomes to RL. A reward is a modeling choice: it translates product objectives and operational costs into a scalar signal that can be optimized over time.}
+\end{frame}
+
+\begin{frame}{Long-Term Consequences}
+  \Large
+  A good decision is one that leads to \emph{high future reward}, not just a high immediate reward.
+
+  \vspace{0.05em}
+  \[
+    \text{Future Reward}
+    =
+    r_t
+    +\gamma r_{t+1}
+    +\gamma^2 r_{t+2}
+    +\cdots
+  \]
+
+  \vspace{-0.2em}
+  \normalsize
+  where $0 < \gamma < 1$ discounts delayed rewards.
+
+  \vspace{0.1em}
+  \large
+  A value function predicts this quantity before making a decision:
+
+  \vspace{-0.4em}
+  \[
+  V(s)
+  \;\approx\;
+  \text{future reward from this state}
+  \]
+
+  \vspace{-0.7em}
+  \[
+  Q(s,a)
+  \;\approx\;
+  \text{future reward after taking action } a
+  \]
+
+  \vspace{-0.35em}
+  \begin{block}{Main takeaway}
+    \small
+    $V$ and $Q$ quantify how good it is to be in a state and to take an action. They are central objects in RL.
+  \end{block}
+  \note{This slide introduces the long-term measurements needed after the imitation-learning pitfalls. Return is the future reward stream. V and Q are predictions of that return under a policy. Q is the key object for improving actions because it compares choices in the same state.}
+\end{frame}
+
+\begin{frame}{Using Advantage to Weight Data}
+  \large
+  Advantage scores a logged action relative to what is typical in the same state:
+
+  \[
+    A(s,a) = Q(s,a) - V(s)
+  \]
+
+  \vspace{0.03cm}
+  \small
+  \begin{itemize}
+    \item positive advantage: this logged action was better than usual
+    \item negative advantage: this logged action was worse than usual
+  \end{itemize}
+
+  \vspace{0.02cm}
+  Convert advantage into a training weight:
+  \[
+  \begin{aligned}
+    \text{advantage weight:}\quad
+    &\textcolor{red}{w(s,a) = \exp\!\left(\beta A(s,a)\right)},
+    \qquad \textcolor{red}{\beta > 0} \\
+    \text{advantage-weighted BC:}\quad
+    &\min_\theta
+      \sum_{(s_i,a_i)\in\mathcal{D}}
+      \textcolor{red}{w(s_i,a_i)}\,
+      \left\|\pi_\theta(s_i)-a_i\right\|^2
+  \end{aligned}
+  \]
+
+  \vspace{-0.25cm}
+  \begin{block}{Simplest offline RL idea}
+    Count ``good'' data points multiple times, and ``bad'' data points only as a fraction.
+  \end{block}
+
+  \vspace{-0.1cm}
+  \small
+  (For now, assume we have the values. We will discuss how to compute them later.)
+  \note{This slide introduces advantage as a way to turn long-term value predictions into supervised-learning weights. The exponential weighting maps positive advantages to large weights and negative advantages to small weights. The objective is behavior cloning with a weighted MSE loss. Defer value estimation until later algorithms; for now the audience only needs the idea that V and Q provide long-term scores.}
 \end{frame}
