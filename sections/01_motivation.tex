@@ -36,14 +36,14 @@
 
   \vspace{0.55cm}
   \begin{itemize}
-    \item In supervised learning, the model observes examples from a dataset.
-    \item In decision-making, the model's output becomes an action.
-    \item That action changes queues, inventories, blending options, throughput, and schedules.
+    \item Supervised learning describes a static world.
+    \item Decision-making asks a counterfactual question: \emph{what should we do?}
+    \item The chosen action changes future queues, inventories, blending options, and schedules.
   \end{itemize}
 
   \vspace{0.4cm}
-  {\Large Predictions are evaluated against labels. Decisions are evaluated by their consequences.}
-  \note{Make the key conceptual difference vivid without notation. The output of a prediction model is information; the output of a decision model changes the operation and therefore affects what happens later.}
+  {\Large Prediction assumes a mostly stationary data source. \\ Decisions change the state distribution the model will face next.}
+  \note{Make the key conceptual difference vivid without notation. Supervised learning usually describes the observed world: what label goes with this input? Decision-making asks about counterfactual futures: what should we do, and what would happen if we did it? Once deployed, the decision rule changes future state distributions, so the data source is no longer passive or stationary.}
 \end{frame}
 
 \begin{frame}{How Have We Solved Decision Problems?}
@@ -117,7 +117,7 @@
   \begin{tikzpicture}[node distance=0.55cm,>=Latex,scale=0.92,transform shape]
     \node[draw,rounded corners,fill=Panel,minimum width=3.15cm,minimum height=0.85cm,align=center] (data) {observed situation\\+ operator decision};
     \node[draw,rounded corners,fill=Panel,right=of data,minimum width=2.8cm,minimum height=0.85cm,align=center] (sl) {supervised\\learning};
-    \node[draw,rounded corners,fill=Panel,right=of sl,minimum width=2.85cm,minimum height=0.85cm,align=center] (rule) {learned\\decision rule};
+    \node[draw,rounded corners,fill=Panel,right=of sl,minimum width=2.85cm,minimum height=0.85cm,align=center] (rule) {learned\\policy};
     \draw[->,thick] (data) -- (sl);
     \draw[->,thick] (sl) -- (rule);
   \end{tikzpicture}
@@ -126,14 +126,14 @@
   \begin{itemize}
     \item Observe what an operator or existing controller did.
     \item Train a model to predict the same action in similar situations.
-    \item Deploy the model as a learned policy.
+    \item Deploy the trained model as a learned ``policy''.
   \end{itemize}
 
   \vspace{0.25cm}
-  Behavior cloning is fully offline, familiar, and requires no trial and error or reward model.
+  Behavior cloning is fully offline and requires no simulator or reward model.
 
   \vspace{0.25cm}
-  {\Large Can we do more than copy the past? Can we prefer decisions that led to better long-term outcomes?}
+  {\Large Can we do more than learn based on operator data? Can we prefer decisions that led to better long-term outcomes?}
 
   \vspace{0.2cm}
   To answer that, we first need a language for decision problems: states, actions, and policies.
