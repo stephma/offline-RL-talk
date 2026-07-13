@@ -1,73 +1,30 @@
-\section{Behavior Cloning and AWR}
+\section{Summary}
 
-\begin{frame}{Recall: Behavior Cloning Is the Offline Baseline}
-  \Large
-  \[
-    \mathcal L_{\mathrm{BC}}(\theta)
-    =
-    -\mathbb E_{(s,a)\sim \dataset}
-    \left[\log \pi_\theta(a \mid s)\right]
-  \]
-
-  \vspace{0.4cm}
-  \normalsize
-  Learn to imitate the actions in the offline dataset.
-
-  \vspace{0.3cm}
-  It is stable and useful, but it does not use rewards or long-term outcomes.
-
-  \vspace{0.3cm}
-  Offline RL starts from BC and asks how to improve it without leaving the data support.
-  \note{This is a recall slide, not the first BC introduction. We already discussed BC and its pitfalls. Now frame it as the baseline that AWR, IQL, and IDQL improve on.}
-\end{frame}
-
-\begin{frame}{Advantage-Weighted Regression}
-  \Large
-  \[
-    \mathcal L_{\mathrm{AWR}}(\theta)
-    =
-    -\mathbb E_{(s,a)\sim \dataset}
-    \left[w(s,a)\log \pi_\theta(a \mid s)\right]
-  \]
-
-  \[
-    w(s,a) \propto \exp\left(\frac{A(s,a)}{\lambda}\right),
-    \qquad
-    A(s,a)=Q(s,a)-V(s)
-  \]
-  \note{Present AWR as a minimal conceptual step: still supervised learning, but weighted by long-term value. Cite Peng et al. verbally here.}
-\end{frame}
-
-\begin{frame}{BC vs. AWR Weighting}
+\begin{frame}{Summary: Three Ideas, Three Representatives}
+  \small
   \centering
-  \begin{tikzpicture}[x=1.15cm,y=0.85cm]
-    \node at (1.2,4) {BC};
-    \node at (5.4,4) {AWR};
-    \foreach \y/\lab/\ret in {3/A/low,2/B/medium,1/C/high} {
-      \node[left] at (0,\y) {\lab};
-      \draw[fill=Panel] (0.4,\y-0.25) rectangle (2.0,\y+0.25);
-      \node[left] at (4.0,\y) {\lab};
-    }
-    \draw[fill=WarmGold!35] (4.4,2.75) rectangle (5.1,3.25);
-    \draw[fill=WarmGold!55] (4.4,1.75) rectangle (5.8,2.25);
-    \draw[fill=SignalGreen!55] (4.4,0.75) rectangle (7.1,1.25);
-    \node[right] at (7.2,1) {cloned most};
-  \end{tikzpicture}
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{@{}p{0.39\textwidth}p{0.29\textwidth}p{0.19\textwidth}@{}}
+    \toprule
+    \textbf{Problem} & \textbf{Core idea} & \shortstack[l]{\textbf{Representative}\\\textbf{algorithm}} \\
+    \midrule
+    Not all demonstrations are equally useful
+    & Reweight data
+    & AWR \\
+    \addlinespace
+    Values are unreliable outside the data
+    & Conservative value learning
+    & CQL \\
+    \addlinespace
+    Avoid unsupported maximization
+    & In-sample value learning
+    & IQL \\
+    \bottomrule
+  \end{tabular}
 
-  \vspace{0.3cm}
-  High-advantage actions are cloned more strongly; low-advantage actions are downweighted.
-  \note{Use this example to make AWR intuitive. If the logs contain mixed-quality decisions, AWR preferentially imitates the better parts.}
-\end{frame}
-
-\begin{frame}{AWR Is the First RL Step}
-  \Large
-  AWR is the smallest conceptual step from imitation learning to reinforcement learning.
-
-  \vspace{0.5cm}
-  \normalsize
-  It still looks like supervised learning, but the labels are now weighted by long-term value.
-
-  \vspace{0.4cm}
-  If logs contain good and bad decisions, AWR gives a way to imitate the better ones more.
-  \note{Transition to IQL: AWR needs advantages. IQL is a modern way to learn them in offline data without out-of-distribution maximization.}
+  \vspace{0.55cm}
+  \begin{block}{Main message}
+    Modern Offline RL is largely about obtaining reliable value estimates from fixed logged data.
+  \end{block}
+  \note{End by returning to the three ideas. Mention IDQL only if needed as a complementary policy-representation extension.}
 \end{frame}

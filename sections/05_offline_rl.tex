@@ -1,70 +1,45 @@
-\section{Offline RL}
+\section{Policy Representation}
 
-\begin{frame}{Offline RL Setting}
-  \Large
-  Fixed dataset:
-  \[
-    \dataset = \{(s_t,a_t,r_t,s_{t+1})\}
-  \]
-
-  \vspace{0.2cm}
-  Behavior policy:
-  \[
-    \pi_b(a \mid s)
-  \]
-
-  \vspace{0.2cm}
-  Goal: learn $\pi(a \mid s)$ without online interaction during training.
-
-  Logged data source: terminal operator logs. Action space: truck selection, pit assignment, conveyor route, silo, and loading schedule.
-  \note{Define offline RL cleanly. The data was collected by a behavior policy pi-b, often not known exactly. Emphasize that this is policy improvement under support constraints, not supervised learning.}
-\end{frame}
-
-\begin{frame}{Support Mismatch}
+\begin{frame}{Complementary Issue: Several Good Actions}
   \centering
-  \begin{tikzpicture}[>=Latex]
+  \begin{tikzpicture}[x=1cm,y=1cm]
     \draw[->,thick] (0,0) -- (10,0) node[right] {action};
-    \foreach \x/\lab in {2/$a_1$,3.2/$a_2$,4.3/$a_3$} {
-      \fill[SignalGreen] (\x,0) circle (4pt);
-      \node[below=0.18cm] at (\x,0) {\lab};
-    }
-    \node[draw,rounded corners,fill=Panel,above=0.8cm] at (3.15,0) {seen in $\dataset$};
-    \fill[WarmGold] (8.1,0) circle (5pt);
-    \node[below=0.18cm] at (8.1,0) {$a^\star$};
-    \node[draw,rounded corners,fill=Panel,above=0.8cm] at (8.1,0) {chosen by learned policy};
+    \fill[SignalGreen] (2.4,0) circle (5pt);
+    \fill[SignalGreen] (7.2,0) circle (5pt);
+    \fill[WarmGold] (4.8,0) circle (5pt);
+    \node[above] at (2.4,0.15) {good};
+    \node[above] at (7.2,0.15) {good};
+    \node[below] at (4.8,-0.15) {bad average};
   \end{tikzpicture}
 
-  \vspace{0.6cm}
-  The policy may choose an unsupported action where the value estimate is unreliable.
-  \note{This is the core offline RL failure mode. The dataset covers actions near the behavior policy pi-b, but maximization may select an action far away.}
+  \vspace{0.55cm}
+  \Large
+  The first three ideas focused on value estimation.
+
+  \vspace{0.25cm}
+  \normalsize
+  IDQL addresses a different issue: representing policies when several actions are equally good.
+  \note{Say explicitly that this is complementary, not a fourth offline RL principle.}
 \end{frame}
 
-\begin{frame}{Why Naive Q-Learning Fails Offline}
+\begin{frame}{Diffusion Policies Represent Richer Action Distributions}
+  \centering
+  \begin{tikzpicture}[node distance=0.75cm,>=Latex]
+    \node[draw,rounded corners,fill=Panel,minimum width=2.2cm] (noise) {noise};
+    \node[draw,rounded corners,fill=Panel,right=of noise,minimum width=2.2cm] (step1) {denoise};
+    \node[draw,rounded corners,fill=Panel,right=of step1,minimum width=2.2cm] (step2) {denoise};
+    \node[draw,rounded corners,fill=Panel,right=of step2,minimum width=2.2cm] (action) {action};
+    \draw[->,thick] (noise) -- (step1);
+    \draw[->,thick] (step1) -- (step2);
+    \draw[->,thick] (step2) -- (action);
+  \end{tikzpicture}
+
+  \vspace{0.55cm}
   \Large
-  Dangerous backup:
-  \[
-    \max_a Q(s,a)
-  \]
+  A diffusion policy can sample several plausible actions for the same state.
 
-  \vspace{0.4cm}
+  \vspace{0.25cm}
   \normalsize
-  The max can select actions that were rarely or never observed.
-
-  \vspace{0.4cm}
-  Then the learned policy may exploit errors in $Q$ outside the data distribution.
-  \note{Explain overestimation: if the value function is wrong somewhere, the max operation will actively search for that mistake.}
-\end{frame}
-
-\begin{frame}{The Offline RL Thesis}
-  \Large
-  Offline RL is mostly about preventing the policy from exploiting value errors outside the data distribution.
-
-  \vspace{0.5cm}
-  \normalsize
-  The rest of the talk builds a ladder:
-
-  \[
-    \text{BC} \rightarrow \text{AWR} \rightarrow \text{IQL} \rightarrow \text{IDQL}
-  \]
-  \note{Use this as the transition into algorithms. Each method fixes a limitation of the previous one.}
+  IDQL combines IQL-style value learning with diffusion-based policy extraction.
+  \note{Keep this short. The endpoint is that richer actors can represent multimodal action choices while the values still guide improvement.}
 \end{frame}

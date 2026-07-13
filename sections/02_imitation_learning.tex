@@ -311,9 +311,5 @@
   \begin{block}{Simplest offline RL idea}
     Count ``good'' data points multiple times, and ``bad'' data points only as a fraction.
   \end{block}
-
-  \vspace{-0.1cm}
-  \small
-  (For now, assume we have the values. We will discuss how to compute them later.)
   \note{This slide introduces advantage as a way to turn long-term value predictions into supervised-learning weights. First define the advantage, then immediately map it to an exponential weight. Positive advantages create larger weights and therefore emphasize the corresponding state-action pairs; negative advantages create smaller weights and deemphasize them. Defer value estimation until later algorithms.}
 \end{frame}

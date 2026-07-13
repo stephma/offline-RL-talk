@@ -1,67 +1,114 @@
-\section{MDPs and Value Functions}
+\section{Three Big Ideas}
 
-\begin{frame}{From Value to Action: Learn $Q(s,a)$}
+\begin{frame}{Three Big Ideas in Offline Reinforcement Learning}
   \Large
-  If we know $Q(s,a)$, we can compare actions in the same state.
-
-  \vspace{0.35cm}
-  \[
-    \text{choose the action with the highest predicted long-term value}
-  \]
+  How have researchers tried to improve behavior cloning?
 
   \vspace{0.35cm}
   \normalsize
-  This is why many RL algorithms learn an action-value function.
-  \note{This slide bridges value functions to action selection. V tells us how good a state is; Q tells us which action to take.}
+  \begin{enumerate}
+    \item \textbf{Reweight the logged data} \\
+    \emph{AWR:} copy successful decisions more strongly.
+
+    \vspace{0.25cm}
+    \item \textbf{Learn conservative value estimates} \\
+    \emph{CQL:} be pessimistic where evidence is weak.
+
+    \vspace{0.25cm}
+    \item \textbf{Estimate values only from supported actions} \\
+    \emph{IQL:} avoid maximizing over unsupported actions altogether.
+  \end{enumerate}
+
+  \vspace{0.25cm}
+  \begin{block}{Map}
+    The algorithms are examples. The three ideas are the structure of the field.
+  \end{block}
+  \note{This is the roadmap for the second half. Emphasize that the talk is now organized around ideas, not papers or algorithms.}
 \end{frame}
 
-\begin{frame}{Q-Learning Update}
+\section{Idea 1: Reweight the Logged Data}
+
+\begin{frame}{Problem: Not All Demonstrations Are Equally Useful}
   \Large
-  A one-step target for $Q$:
-  \[
-    Q(s_t,a_t)
-    \leftarrow
-    r_t + \gamma \max_{a'} Q(s_{t+1},a')
-  \]
+  Behavior cloning treats every logged decision equally.
+
+  \vspace{0.4cm}
+  \normalsize
+  But logged data often contains a mixture:
+  \begin{itemize}
+    \item strong operator decisions,
+    \item reasonable routine decisions,
+    \item choices that led to delay, rehandling, or poor downstream outcomes.
+  \end{itemize}
+
+  \vspace{0.35cm}
+  \begin{block}{Question}
+    Can we learn more from the better demonstrations?
+  \end{block}
+  \note{This starts Chapter 1. Keep it as a reminder, not a full recap of BC.}
+\end{frame}
+
+\begin{frame}{Central Idea: Good Demonstrations Count More}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=0.8cm]
+    \node at (1.1,3.9) {BC};
+    \node at (6.0,3.9) {reweighted BC};
+    \foreach \y/\lab in {3/A,2/B,1/C} {
+      \node[left] at (0.1,\y) {\lab};
+      \draw[fill=Panel] (0.5,\y-0.22) rectangle (2.0,\y+0.22);
+      \node[left] at (4.2,\y) {\lab};
+    }
+    \draw[fill=WarmGold!35] (4.7,2.78) rectangle (5.3,3.22);
+    \draw[fill=WarmGold!55] (4.7,1.78) rectangle (6.0,2.22);
+    \draw[fill=SignalGreen!55] (4.7,0.78) rectangle (7.4,1.22);
+    \node[right] at (7.5,1) {copied most};
+  \end{tikzpicture}
+
+  \vspace{0.35cm}
+  \Large
+  Keep supervised learning, but change how much each example matters.
+
+  \vspace{0.2cm}
+  \normalsize
+  The weight comes from estimated long-term value.
+  \note{This visual should make the idea memorable: AWR does not abandon BC; it changes the effective sampling frequency of each data point.}
+\end{frame}
+
+\begin{frame}{Representative Method: AWR}
+  \Large
+  Advantage-Weighted Regression assigns a weight to each logged decision.
 
   \vspace{0.3cm}
   \normalsize
-  Immediate reward plus the best predicted value at the next state.
-  \note{Introduce the core Q-learning backup. Do not dwell on stochastic approximation details. The important part is that the max turns value learning into policy improvement.}
+  \begin{itemize}
+    \item estimate long-term value,
+    \item compare the logged action to typical behavior in the same state,
+    \item assign a larger weight to positive-advantage decisions,
+    \item train with weighted supervised learning.
+  \end{itemize}
+
+  \vspace{0.3cm}
+  \begin{block}{What to remember}
+    Good demonstrations count more.
+  \end{block}
+
+  \vspace{0.1cm}
+  \small
+  Representative algorithm: Advantage-Weighted Regression (AWR).
+  \note{Do not re-derive the AWR equations; they were already introduced. This slide only labels the first big idea.}
 \end{frame}
 
-\begin{frame}{Greedy Policy Improvement}
+\begin{frame}{Remaining Problem: Where Do the Weights Come From?}
   \Large
-  Once we have $Q$, improve the policy by acting greedily:
-  \[
-    \pi_{\mathrm{new}}(s)
-    =
-    \arg\max_a Q(s,a)
-  \]
+  Reweighting is only as good as the value estimates behind the weights.
+
+  \vspace{0.4cm}
+  \normalsize
+  If the value model is unreliable, the weights become unreliable too.
 
   \vspace{0.35cm}
-  \normalsize
-  This is the basic RL loop:
-  \[
-    \text{estimate values} \rightarrow \text{choose better actions}.
-  \]
-  \note{Make the policy improvement idea explicit before discussing why it is dangerous offline.}
-\end{frame}
-
-\begin{frame}{Why Q-Learning Is Dangerous Offline}
-  \Large
-  Offline data only covers some actions.
-
-  \vspace{0.35cm}
-  \[
-    \max_a Q(s,a)
-  \]
-
-  \vspace{0.25cm}
-  \normalsize
-  The max may select an action the dataset barely supports, where $Q$ is just a guess.
-
-  \vspace{0.25cm}
-  \takeaway{The same maximization that improves policies online can exploit value errors offline.}
-  \note{This is the teaser for the offline RL section. Later, support mismatch and IQL will make this precise.}
+  \begin{block}{Next question}
+    How can we estimate values safely from a fixed offline dataset?
+  \end{block}
+  \note{This transition leads directly to conservative value learning.}
 \end{frame}
