@@ -210,14 +210,14 @@
   \[
   V(s)
   \;\approx\;
-  \text{future reward from this state}
+  \text{future reward, starting from state $s$}
   \]
 
   \vspace{-0.7em}
   \[
   Q(s,a)
   \;\approx\;
-  \text{future reward after taking action } a
+  \text{future reward, starting from state $s$ and taking action $a$}
   \]
 
   \vspace{-0.35em}
@@ -228,6 +228,54 @@
   \note{This slide introduces the long-term measurements needed after the imitation-learning pitfalls. Return is the future reward stream. V and Q are predictions of that return under a policy. Q is the key object for improving actions because it compares choices in the same state.}
 \end{frame}
 
+\begin{frame}{Three Common RL Families}
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Family} & \textbf{Basic idea} \\
+    \midrule
+    Value-based RL & Learn $Q(s,a)$, act greedily \\
+    Policy gradient & Directly improve $\pi(a \mid s)$ \\
+    Actor-critic & Learn both policy and value \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.4cm}
+  \small
+  \begin{itemize}
+    \item Q-learning is conceptually simple, but is most natural when actions are discrete.
+    \item Policy gradients apply more generally, but require expensive rollouts.
+    \item Actor-critic methods combine both ideas: they learn a policy and a value estimate, and work with discrete or continuous actions.
+  \end{itemize}
+  \note{Avoid a DQN/PPO survey. The goal is vocabulary and motivation for critics, actors, and value functions. Position actor-critic methods as a practical compromise: use value estimates for efficiency while retaining a policy representation that works for discrete and continuous actions.}
+\end{frame}
+
+\begin{frame}{Learning the Value Function}
+  \large
+  Learning the $Q$-function is an important step in nearly all of RL.
+
+  \vspace{0.25cm}
+  \normalsize
+  To keep things simple, $Q$ satisfies a recursive relation:
+
+  \vspace{0.1cm}
+  long-term value =
+  expected current reward +
+  discounted future value.
+
+  \vspace{0.15cm}
+  \[
+    Q(s_t,a_t) \approx r_t + \gamma V(s_{t+1})
+  \]
+
+  \vspace{0.2cm}
+  This recursion can be solved with exact or approximate dynamic programming.
+
+  \vspace{0.2cm}
+  We will skip those details and use the equation only as the basic intuition behind value learning.
+  \note{Make Bellman thinking less abrupt. The important idea is that long-term value can be written recursively as immediate reward plus discounted future value. Mention dynamic programming as the classical way to solve such equations, but do not develop the details here.}
+\end{frame}
+
 \begin{frame}{Using Advantage to Weight Data}
   \large
   Advantage scores a logged action relative to what is typical in the same state:
@@ -236,14 +284,8 @@
     A(s,a) = Q(s,a) - V(s)
   \]
 
-  \vspace{0.03cm}
-  \small
-  \begin{itemize}
-    \item positive advantage: this logged action was better than usual
-    \item negative advantage: this logged action was worse than usual
-  \end{itemize}
-
-  \vspace{0.02cm}
+  \vspace{0.05cm}
+  \normalsize
   Convert advantage into a training weight:
   \[
   \begin{aligned}
@@ -258,7 +300,14 @@
   \end{aligned}
   \]
 
-  \vspace{-0.25cm}
+  \vspace{-0.35cm}
+  \small
+  \begin{itemize}
+    \item positive advantage $\rightarrow$ larger weight $\rightarrow$ state/action pair is enhanced in importance
+    \item negative advantage $\rightarrow$ smaller weight $\rightarrow$ state/action pair is reduced in importance
+  \end{itemize}
+
+  \vspace{-0.05cm}
   \begin{block}{Simplest offline RL idea}
     Count ``good'' data points multiple times, and ``bad'' data points only as a fraction.
   \end{block}
@@ -266,5 +315,5 @@
   \vspace{-0.1cm}
   \small
   (For now, assume we have the values. We will discuss how to compute them later.)
-  \note{This slide introduces advantage as a way to turn long-term value predictions into supervised-learning weights. The exponential weighting maps positive advantages to large weights and negative advantages to small weights. The objective is behavior cloning with a weighted MSE loss. Defer value estimation until later algorithms; for now the audience only needs the idea that V and Q provide long-term scores.}
+  \note{This slide introduces advantage as a way to turn long-term value predictions into supervised-learning weights. First define the advantage, then immediately map it to an exponential weight. Positive advantages create larger weights and therefore emphasize the corresponding state-action pairs; negative advantages create smaller weights and deemphasize them. Defer value estimation until later algorithms.}
 \end{frame}

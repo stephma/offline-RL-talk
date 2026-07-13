@@ -1,42 +1,5 @@
 \section{MDPs and Value Functions}
 
-\begin{frame}{From Decisions to MDPs}
-  \Large
-  A Markov Decision Process adds dynamics and rewards:
-  \[
-    (\states,\actions,P,r,\gamma)
-  \]
-
-  \vspace{0.2cm}
-  \normalsize
-  \begin{itemize}
-    \item $\states$: possible states
-    \item $\actions$: possible actions
-    \item $P(s' \mid s,a)$: transition
-    \item $r(s,a)$: reward
-    \item $\gamma \in [0,1)$: discount
-  \end{itemize}
-
-  \vspace{0.2cm}
-  The key modeling assumption is that $s_t$ contains enough information to make the next decision.
-  \note{States, actions, and policies were introduced earlier using the grain terminal example. Here, formalize the MDP by adding stochastic transitions, rewards, and discounting. Emphasize the Markov assumption: the state must contain enough information for decision making.}
-\end{frame}
-
-\begin{frame}{Bellman Thinking}
-  \Large
-  \[
-    Q(s,a) \approx r(s,a) + \gamma V(s')
-  \]
-
-  \vspace{0.4cm}
-  \normalsize
-  The value of an action is immediate reward plus the value of where it takes us.
-
-  \vspace{0.4cm}
-  Bellman recursion is the RL version of cost-to-go recursion in optimal control.
-  \note{Connect explicitly back to dynamic programming. This equation is the skeleton underneath most of the algorithms later.}
-\end{frame}
-
 \begin{frame}{From Value to Action: Learn $Q(s,a)$}
   \Large
   If we know $Q(s,a)$, we can compare actions in the same state.

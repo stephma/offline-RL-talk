@@ -17,22 +17,6 @@
   \note{Keep this short. It exists to set up what offline RL is not.}
 \end{frame}
 
-\begin{frame}{Three Common RL Families}
-  \centering
-  \begin{tabular}{ll}
-    \toprule
-    \textbf{Family} & \textbf{Basic idea} \\
-    \midrule
-    Value-based RL & Learn $Q(s,a)$, act greedily \\
-    Policy gradient & Directly improve $\pi(a \mid s)$ \\
-    Actor-critic & Learn both policy and value \\
-    \bottomrule
-  \end{tabular}
-
-  \vspace{0.5cm}
-  \note{Avoid a DQN/PPO survey. The goal is vocabulary and motivation for critics, actors, and value functions.}
-\end{frame}
-
 \begin{frame}{Why Online RL Is Hard in Products}
   \begin{itemize}
     \item Unsafe or costly exploration
