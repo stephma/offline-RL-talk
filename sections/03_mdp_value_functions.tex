@@ -85,90 +85,62 @@
   \note{This starts Chapter 1. Keep it as a reminder, not a full recap of BC.}
 \end{frame}
 
-\begin{frame}{Central Idea: Good Demonstrations Count More}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=0.8cm]
-    \node at (1.1,3.9) {BC};
-    \node at (6.0,3.9) {reweighted BC};
-    \foreach \y/\lab in {3/A,2/B,1/C} {
-      \node[left] at (0.1,\y) {\lab};
-      \draw[fill=Panel] (0.5,\y-0.22) rectangle (2.0,\y+0.22);
-      \node[left] at (4.2,\y) {\lab};
-    }
-    \draw[fill=WarmGold!35] (4.7,2.78) rectangle (5.3,3.22);
-    \draw[fill=WarmGold!55] (4.7,1.78) rectangle (6.0,2.22);
-    \draw[fill=SignalGreen!55] (4.7,0.78) rectangle (7.4,1.22);
-    \node[right] at (7.5,1) {copied most};
-  \end{tikzpicture}
-
-  \vspace{0.35cm}
-  Keep supervised learning, but change how much each example matters.
+\begin{frame}{Core Idea: Advantage}
+  Compare the logged action to what is typical in the same state:
+  \[
+    A(s,a)=Q(s,a)-V(s).
+  \]
 
   \vspace{0.2cm}
-  The weight comes from estimated long-term value.
-  \note{This visual should make the idea memorable: AWR does not abandon BC; it changes the effective sampling frequency of each data point.}
+  \begin{itemize}
+    \item $Q(s,a)$ measures how good it is to take action $a$ in state $s$.
+    \item $V(s)$ measures how good the state is on average.
+    \item Their difference says how much better this action is than expected.
+  \end{itemize}
+
+  \vspace{0.2cm}
+  \centering
+  \begin{tikzpicture}[x=1cm,y=0.8cm,>=Latex]
+    \draw[->,Muted] (0,0) -- (8.4,0) node[right] {long-term value};
+    \draw[thick,Muted] (3.8,-0.12) -- (3.8,0.12);
+    \node[below,text=Muted] at (3.8,-0.12) {average action};
+
+    \draw[fill=Panel] (3.25,0.75) rectangle (4.35,1.35);
+    \node at (3.8,1.05) {$V(s)$};
+
+    \draw[fill=SignalGreen!55] (6.0,0.75) rectangle (7.1,1.35);
+    \node at (6.55,1.05) {$Q(s,a)$};
+    \node[above,text=SignalGreen] at (6.55,1.43) {better than average};
+    \draw[<->,thick,SignalGreen] (3.8,0.42) -- (6.55,0.42);
+    \node[below,text=SignalGreen] at (5.18,0.38) {advantage};
+  \end{tikzpicture}
+
+  \vspace{0.15cm}
+  This difference is called the \textbf{advantage}.
+  \note{Define advantage before introducing advantage weights. Q measures the value of a particular action; V is the baseline value of the state. The advantage is the improvement over that baseline.}
 \end{frame}
 
-\begin{frame}{AWR: Weighted Behavior Cloning}
+\begin{frame}{Advantage-Weighted Regression (AWR)}
   Behavior cloning solves:
   \[
     \min_\theta \sum_i \ell\!\left(\pi_\theta(s_i),a_i\right)
   \]
 
   \vspace{0.15cm}
-  AWR changes exactly one thing:
+  AWR keeps the same supervised-learning loss, but weights each example:
   \[
     \min_\theta
     \sum_i
-    \textcolor{red}{w(s_i,a_i)}
-    \,\ell\!\left(\pi_\theta(s_i),a_i\right),
-    \qquad
-    \textcolor{red}{w(s,a)=\exp\!\left(\beta A(s,a)\right)}.
+    \textcolor{red}{\exp\!\left(\beta A(s_i,a_i)\right)}
+    \,\ell\!\left(\pi_\theta(s_i),a_i\right).
   \]
 
   \vspace{0.25cm}
-  \begin{block}{Intuition}
-    Everything else is still supervised learning; high-advantage examples simply count more.
+  \begin{block}{Key point}
+    The only change is the weighting. Everything else remains supervised learning.
   \end{block}
-  \note{This is the key equation for AWR. The red term is the only structural change from behavior cloning.}
-\end{frame}
-
-\begin{frame}{Representative Method: AWR}
-  Advantage-Weighted Regression assigns a weight to each logged decision.
-
-  \vspace{0.3cm}
-  \begin{itemize}
-    \item estimate long-term value,
-    \item compare the logged action to typical behavior in the same state,
-    \item assign a larger weight to positive-advantage decisions,
-    \item train with weighted supervised learning.
-  \end{itemize}
-
-  \vspace{0.3cm}
-  \begin{block}{What to remember}
-    Good demonstrations count more.
-  \end{block}
-
-  \vspace{0.1cm}
-  Representative algorithm: Advantage-Weighted Regression (AWR).
-  \note{Do not re-derive the AWR equations; they were already introduced. This slide only labels the first big idea.}
-\end{frame}
-
-\begin{frame}{Remaining Problem: Where Do the Weights Come From?}
-  AWR assumes reliable value estimates.
-
-  \vspace{0.25cm}
-  Its weights depend on advantage:
-  \[
-    A(s,a)=Q(s,a)-V(s).
-  \]
 
   \vspace{0.15cm}
-  If $Q$ or $V$ is unreliable, the weights become unreliable too.
-
-  \vspace{0.35cm}
-  \begin{block}{Next question}
-    How should we estimate values offline?
-  \end{block}
-  \note{This transition leads directly to conservative value learning.}
+  \textbf{Next question:} Where do reliable estimates of $Q$ and $V$ come from?
+  \note{This is the AWR slide. The audience should see that AWR is weighted behavior cloning: high-advantage logged decisions count more, but the policy update is still supervised learning. End by pointing to the next chapter: reliable value estimation.}
 \end{frame}
