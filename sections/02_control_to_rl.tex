@@ -18,34 +18,23 @@
   \note{This is the only place to briefly reintroduce why offline value learning is hard. Keep it short.}
 \end{frame}
 
-\begin{frame}{Central Idea: Be Pessimistic Where Evidence Is Weak}
+\begin{frame}{Core Idea: Conservative Value Learning}
   \centering
-  \begin{tikzpicture}[>=Latex,x=1cm,y=0.85cm]
+  \begin{tikzpicture}[>=Latex,x=0.82cm,y=0.52cm]
     \draw[->,thick] (0,0) -- (10,0) node[right] {action};
     \foreach \x/\h in {1.4/1.0,2.2/1.7,3.0/1.3,3.9/2.0,4.8/1.5} {
       \draw[fill=Panel] (\x-0.12,0) rectangle (\x+0.12,\h);
     }
-    \node[above] at (3.1,2.25) {evidence};
+    \node[above] at (3.1,2.8) {training data};
     \draw[SignalGreen,ultra thick] (1.0,1.9) -- (5.2,1.9);
-    \node[right] at (5.25,1.9) {trusted};
+    \node[right] at (5.25,1.9) {high $Q$};
     \draw[WarmGold,dashed,ultra thick] (7.6,0) -- (7.6,2.8);
     \node[above] at (7.6,2.8) {unsupported};
     \draw[WarmGold,ultra thick] (7.0,0.45) -- (8.2,0.45);
-    \node[right] at (8.25,0.45) {pessimistic};
+    \node[right] at (8.25,0.85) {low $Q$};
   \end{tikzpicture}
 
-  \vspace{0.35cm}
-  Conservative value learning lowers confidence away from the logged data.
-
-  \vspace{0.2cm}
-  The policy should not be attracted to actions whose value is high only because the model is guessing.
-  \note{This slide conveys the CQL principle visually. Pessimism is a guardrail against unsupported optimism.}
-\end{frame}
-
-\begin{frame}{CQL: Bellman Loss + Conservative Penalty}
-  CQL changes the objective for learning $Q$:
-
-  \vspace{0.1cm}
+  \vspace{0.15cm}
   \[
     \mathcal L_{\rm CQL}
     =
@@ -59,32 +48,11 @@
     \right).
   \]
 
-  \vspace{0.25cm}
-  \begin{block}{Intuition}
-    Fit the data, but penalize high values for actions not well supported by the data.
+  \vspace{0.15cm}
+  \begin{block}{Main takeaway}
+    \textbf{CQL changes only the value-learning objective:} fit the data, but penalize high $Q$-values for unsupported actions.
   \end{block}
-  \note{This is schematic, not a derivation. Mu represents candidate actions used to probe unsupported or weakly supported regions. The audience should remember Bellman loss plus conservative penalty.}
-\end{frame}
-
-\begin{frame}{Representative Method: CQL}
-  Conservative Q-Learning changes the value-learning objective.
-
-  \vspace{0.35cm}
-  Its principle is simple:
-  \begin{itemize}
-    \item fit observed transitions in the dataset;
-    \item penalize high values assigned to actions not well supported by the dataset;
-    \item leave the policy update as a separate step.
-  \end{itemize}
-
-  \vspace{0.35cm}
-  \begin{block}{What to remember}
-    CQL's contribution is conservative value estimation: do not trust unsupported actions.
-  \end{block}
-
-  \vspace{0.1cm}
-  Representative algorithm: Conservative Q-Learning (CQL).
-  \note{Avoid the CQL objective. The audience should remember the pessimism principle, not the optimization details.}
+  \note{This slide combines the CQL picture with the schematic objective. Mu represents candidate actions used to probe unsupported or weakly supported regions. The audience should remember: Bellman loss plus conservative penalty.}
 \end{frame}
 
 \begin{frame}{Another Design Philosophy: Avoid the Max}
