@@ -1,11 +1,9 @@
 \section{First Obvious Idea: Imitate Good Operators}
 
 \begin{frame}{Imitation Learning: Turn Decisions Into Supervised Learning}
-  \large
   First idea: collect observed behavior and train a policy to predict what the operator would do.
 
   \vspace{0.12cm}
-  \normalsize
   Historical demonstrations come from a \alert{behavior policy} $\pi_b$, e.g. human terminal operators:
   \[
     \dataset = \{(s_t,a_t)\},
@@ -71,11 +69,9 @@
   \end{columns}
 
   \vspace{0.28cm}
-  \large
   Consider imitation data for self-driving cars:
 
   \vspace{0.08cm}
-  \normalsize
   \begin{itemize}
     \item in similar observed states, driver 1 stays in lane
     \item driver 2 changes lanes
@@ -118,11 +114,9 @@
   \end{columns}
 
   \vspace{0.24cm}
-  \large
   A policy trained only on expert states may not know how to recover from states caused by its own mistakes.
 
   \vspace{0.12cm}
-  \normalsize
   \begin{itemize}
     \item $\rightarrow$ Distribution shift: deployment samples from the learned policy's state distribution, not the expert's.
   \end{itemize}
@@ -133,27 +127,22 @@
 \end{frame}
 
 \begin{frame}{Pitfall 3: Imitation Ignores Outcomes}
-  \large
   Behavior cloning asks only:
 
   \vspace{0.12cm}
   \centering
-  \Large
-  ``What action was taken in this situation?''
+  \textbf{``What action was taken in this situation?''}
 
   \vspace{0.28cm}
   \raggedright
-  \large
   It does not ask:
 
   \vspace{0.12cm}
   \centering
-  \Large
-  ``Which action led to the best long-term outcome?''
+  \textbf{``Which action led to the best long-term outcome?''}
 
   \vspace{0.28cm}
   \raggedright
-  \normalsize
   Every logged decision becomes a training example.
   The quality of the outcome does not change how strongly it is learned.
 
@@ -163,7 +152,6 @@
 \end{frame}
 
 \begin{frame}{Rewards Measure the Consequences of Decisions}
-  \Large
   A reward turns delayed product outcomes into feedback for decisions:
 
   \[
@@ -171,7 +159,6 @@
   \]
 
   \vspace{0.25cm}
-  \normalsize
   For grain loading, rewards can combine:
   \begin{itemize}
     \item train loading progress and throughput
@@ -185,7 +172,6 @@
 \end{frame}
 
 \begin{frame}{Long-Term Consequences}
-  \Large
   A good decision is one that leads to \emph{high future reward}, not just a high immediate reward.
 
   \vspace{0.05em}
@@ -199,11 +185,9 @@
   \]
 
   \vspace{-0.2em}
-  \normalsize
   where $0 < \gamma < 1$ discounts delayed rewards.
 
   \vspace{0.1em}
-  \large
   A value function predicts this quantity before making a decision:
 
   \vspace{-0.4em}
@@ -222,7 +206,6 @@
 
   \vspace{-0.35em}
   \begin{block}{Main takeaway}
-    \small
     $V$ and $Q$ quantify how good it is to be in a state and to take an action. They are central objects in RL.
   \end{block}
   \note{This slide introduces the long-term measurements needed after the imitation-learning pitfalls. Return is the future reward stream. V and Q are predictions of that return under a policy. Q is the key object for improving actions because it compares choices in the same state.}
@@ -241,7 +224,6 @@
   \end{tabular}
 
   \vspace{0.4cm}
-  \small
   \begin{itemize}
     \item Q-learning is conceptually simple, but is most natural when actions are discrete.
     \item Policy gradients apply more generally, but require expensive rollouts.
@@ -251,11 +233,9 @@
 \end{frame}
 
 \begin{frame}{Learning the Value Function}
-  \large
   Learning the $Q$-function is an important step in nearly all of RL.
 
   \vspace{0.25cm}
-  \normalsize
   To keep things simple, $Q$ satisfies a recursive relation:
 
   \vspace{0.1cm}

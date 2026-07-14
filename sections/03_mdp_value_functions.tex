@@ -1,86 +1,55 @@
 \section{Three Big Ideas}
 
 \begin{frame}{Three Big Ideas in Offline Reinforcement Learning}
-  \Large
   Complementary approaches to improve behavior cloning:
 
   \vspace{0.35cm}
-  \normalsize
   \begin{enumerate}
     \item \textbf{Reweight the logged data} \\
-    \emph{AWR:} copy successful decisions more strongly.
+    \emph{Advantage-Weighted Regression (AWR):} copy successful decisions more strongly.
 
     \vspace{0.25cm}
     \item \textbf{Learn conservative value estimates} \\
-    \emph{CQL:} be pessimistic where evidence is weak.
+    \emph{Conservative Q-Learning (CQL):} be pessimistic where evidence is weak.
 
     \vspace{0.25cm}
     \item \textbf{Estimate values only from supported actions} \\
-    \emph{IQL:} avoid maximizing over unsupported actions altogether.
+    \emph{Implicit Q-Learning (IQL):} avoid maximizing over unsupported actions altogether.
   \end{enumerate}
 
-  \vspace{0.25cm}
-  \begin{block}{Map}
-    The algorithms are examples. The three ideas are the structure of the field.
-  \end{block}
   \note{This is the roadmap for the second half. Emphasize that the talk is now organized around ideas, not papers or algorithms.}
 \end{frame}
 
 \begin{frame}{Generic Actor-Critic Offline RL}
-  \large
-  Most modern actor-critic Offline RL methods separate learning into two stages:
+  Most modern actor-critic Offline RL methods separate two steps:
 
-  \vspace{0.2cm}
-  \normalsize
-  \begin{enumerate}
-    \item Estimate reliable values from logged data.
-    \item Improve the policy using those values.
-  \end{enumerate}
-
-  \vspace{0.2cm}
-  \small
+  \vspace{0.15cm}
   \[
   \begin{aligned}
     &\text{estimate } Q,V \\
-    &\Downarrow \\
-    &\text{policy improvement}
+    &\Updownarrow \\
+    &\text{improve policy}
   \end{aligned}
   \]
 
-  \vspace{0.2cm}
-  \normalsize
-  \begin{block}{Key point}
-    Different algorithms mainly differ in how they estimate reliable values.
-  \end{block}
-  \note{This is the conceptual anchor for the second half, but avoid implying that every method uses weighted behavior cloning. The common structure is value estimation followed by policy improvement.}
-\end{frame}
-
-\begin{frame}{Where the Methods Differ}
-  \Large
-  The three ideas intervene at different points.
-
-  \vspace{0.35cm}
-  \normalsize
+  \vspace{0.25cm}
+  The three ideas intervene at different points:
   \begin{itemize}
-    \item \textbf{AWR} mainly changes the policy improvement step.
+    \item \textbf{AWR} mainly changes the improve-policy step.
     \item \textbf{CQL} and \textbf{IQL} focus primarily on value estimation.
   \end{itemize}
 
-  \vspace{0.35cm}
-  \begin{block}{Organizing distinction}
-    Policy updates need values; Offline RL methods differ in how those values are made reliable.
-  \end{block}
-  \note{This slide prevents overgeneralization. AWR is a policy-improvement method. CQL and IQL are primarily value-estimation philosophies.}
+  \vspace{0.25cm}
+  Policy updates need values; methods differ in how those values are made reliable.
+  \note{This is the conceptual anchor for the second half, but avoid implying that every method uses weighted behavior cloning. AWR is a policy-improvement method. CQL and IQL are primarily value-estimation philosophies.}
 \end{frame}
 
 \section{Idea 1: Reweight the Logged Data}
 
 \begin{frame}{Problem: Not All Demonstrations Are Equally Useful}
-  \Large
   Behavior cloning treats every logged decision equally.
 
   \vspace{0.4cm}
-  \normalsize
   But logged data often contains a mixture:
   \begin{itemize}
     \item strong operator decisions,
@@ -112,17 +81,14 @@
   \end{tikzpicture}
 
   \vspace{0.35cm}
-  \Large
   Keep supervised learning, but change how much each example matters.
 
   \vspace{0.2cm}
-  \normalsize
   The weight comes from estimated long-term value.
   \note{This visual should make the idea memorable: AWR does not abandon BC; it changes the effective sampling frequency of each data point.}
 \end{frame}
 
 \begin{frame}{AWR: Weighted Behavior Cloning}
-  \large
   Behavior cloning solves:
   \[
     \min_\theta \sum_i \ell\!\left(\pi_\theta(s_i),a_i\right)
@@ -147,11 +113,9 @@
 \end{frame}
 
 \begin{frame}{Representative Method: AWR}
-  \Large
   Advantage-Weighted Regression assigns a weight to each logged decision.
 
   \vspace{0.3cm}
-  \normalsize
   \begin{itemize}
     \item estimate long-term value,
     \item compare the logged action to typical behavior in the same state,
@@ -165,17 +129,14 @@
   \end{block}
 
   \vspace{0.1cm}
-  \small
   Representative algorithm: Advantage-Weighted Regression (AWR).
   \note{Do not re-derive the AWR equations; they were already introduced. This slide only labels the first big idea.}
 \end{frame}
 
 \begin{frame}{Remaining Problem: Where Do the Weights Come From?}
-  \Large
   AWR assumes reliable value estimates.
 
   \vspace{0.25cm}
-  \normalsize
   Its weights depend on advantage:
   \[
     A(s,a)=Q(s,a)-V(s).

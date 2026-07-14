@@ -1,11 +1,9 @@
 \section{Idea 2: Conservative Value Learning}
 
 \begin{frame}{Problem: Offline Values Can Be Overconfident}
-  \Large
   To compute useful weights, we need value estimates.
 
   \vspace{0.35cm}
-  \normalsize
   But value estimation is harder offline:
   \begin{itemize}
     \item online learning can test actions and correct bad guesses,
@@ -37,17 +35,14 @@
   \end{tikzpicture}
 
   \vspace{0.35cm}
-  \Large
   Conservative value learning lowers confidence away from the logged data.
 
   \vspace{0.2cm}
-  \normalsize
   The policy should not be attracted to actions whose value is high only because the model is guessing.
   \note{This slide conveys the CQL principle visually. Pessimism is a guardrail against unsupported optimism.}
 \end{frame}
 
 \begin{frame}{CQL: Bellman Loss + Conservative Penalty}
-  \large
   CQL changes the objective for learning $Q$:
 
   \vspace{0.1cm}
@@ -72,11 +67,9 @@
 \end{frame}
 
 \begin{frame}{Representative Method: CQL}
-  \Large
   Conservative Q-Learning changes the value-learning objective.
 
   \vspace{0.35cm}
-  \normalsize
   Its principle is simple:
   \begin{itemize}
     \item fit observed transitions in the dataset;
@@ -90,17 +83,14 @@
   \end{block}
 
   \vspace{0.1cm}
-  \small
   Representative algorithm: Conservative Q-Learning (CQL).
   \note{Avoid the CQL objective. The audience should remember the pessimism principle, not the optimization details.}
 \end{frame}
 
 \begin{frame}{Another Design Philosophy: Avoid the Max}
-  \Large
   Conservative value learning is one way to obtain reliable offline values.
 
   \vspace{0.35cm}
-  \normalsize
   Another family asks whether we can avoid unsupported maximization in the first place.
 
   \vspace{0.25cm}

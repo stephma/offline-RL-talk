@@ -1,11 +1,9 @@
 \section{Idea 3: In-Sample Value Learning}
 
 \begin{frame}{Problem: Can We Avoid Unsupported Maximization?}
-  \Large
   Instead of correcting bad value estimates, can we avoid creating them?
 
   \vspace{0.4cm}
-  \normalsize
   Many value-based methods rely on maximizing over actions:
   \[
     \max_a Q(s,a)
@@ -20,7 +18,6 @@
 \end{frame}
 
 \begin{frame}{IQL: Replace the Max by a Supported Value}
-  \large
   Many value-based methods ask for the best action through:
   \[
     \max_a Q(s,a).
@@ -56,21 +53,17 @@
   \end{tikzpicture}
 
   \vspace{0.45cm}
-  \Large
   IQL estimates high values among logged actions, not over all possible actions.
 
   \vspace{0.2cm}
-  \normalsize
   In practice, this is implemented with expectile regression: a soft way to estimate a high supported value.
   \note{Mention expectiles once. Do not derive them. The audience should remember high-but-supported values.}
 \end{frame}
 
 \begin{frame}{Representative Method: IQL}
-  \Large
   Implicit Q-Learning separates value estimation from action maximization.
 
   \vspace{0.35cm}
-  \normalsize
   \begin{itemize}
     \item learn values from logged state-action pairs,
     \item avoid explicit maximization over unsupported actions,
@@ -86,7 +79,6 @@
 \end{frame}
 
 \begin{frame}{IQL Connects Back to AWR}
-  \large
   IQL changes how the advantage is computed:
   \[
     A(s,a)=Q(s,a)-V(s).
@@ -109,11 +101,9 @@
 \end{frame}
 
 \begin{frame}{Remaining Problem: What Should the Policy Look Like?}
-  \Large
   The first three ideas focus on value estimation.
 
   \vspace{0.35cm}
-  \normalsize
   But policy representation can also matter.
 
   \vspace{0.25cm}

@@ -14,10 +14,9 @@
   \end{tabular}
 
   \vspace{0.65cm}
-  {\large Machine learning describes the operation. Decision-making changes it.}
+  \textbf{Machine learning describes the operation. Decision-making changes it.}
 
   \vspace{0.35cm}
-  \normalsize
   Reinforcement learning is a framework for learning such decisions.
   \note{Start from familiar supervised learning. Prediction is useful for describing the operation, but the topic of the talk is choosing interventions: which truck, route, silo, or schedule. Keep RL as a light framing line only.}
 \end{frame}
@@ -42,7 +41,8 @@
   \end{itemize}
 
   \vspace{0.4cm}
-  {\Large Prediction assumes a mostly stationary data source. \\ Decisions change the state distribution the model will face next.}
+  \textbf{Prediction assumes a mostly stationary data source.} \\
+  \textbf{Decisions change the state distribution the model will face next.}
   \note{Make the key conceptual difference vivid without notation. Supervised learning usually describes the observed world: what label goes with this input? Decision-making asks about counterfactual futures: what should we do, and what would happen if we did it? Once deployed, the decision rule changes future state distributions, so the data source is no longer passive or stationary.}
 \end{frame}
 
@@ -78,11 +78,9 @@
   \end{tikzpicture}
 
   \vspace{0.45cm}
-  \Large
   Reinforcement learning learns a decision strategy through interaction.
 
   \vspace{0.25cm}
-  \normalsize
   It can optimize long-term outcomes, account for how one decision affects later decisions, and learn strategies that are hard to specify manually.
 
   \vspace{0.3cm}
@@ -107,7 +105,6 @@
   Many real systems already contain years of operational decisions made by people, controllers, or earlier software.
 
   \vspace{0.3cm}
-  \Large
   Offline RL asks whether we can learn a better decision strategy from logged interaction data, without new trial and error during training.
   \note{Frame offline RL as a modern data-driven formulation, not only a workaround for dangerous interaction. The key is starting from operational experience that already exists, then evaluating and rolling out cautiously.}
 \end{frame}
@@ -133,7 +130,7 @@
   Behavior cloning is fully offline and requires no simulator or reward model.
 
   \vspace{0.25cm}
-  {\Large Can we do more than learn based on operator data? Can we prefer decisions that led to better long-term outcomes?}
+  \textbf{Can we do more than learn based on operator data? Can we prefer decisions that led to better long-term outcomes?}
 
   \vspace{0.2cm}
   To answer that, we first need a language for decision problems: states, actions, and policies.
