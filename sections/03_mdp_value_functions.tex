@@ -1,6 +1,6 @@
 \section{Three Big Ideas}
 
-\begin{frame}{Three Big Ideas in Offline Reinforcement Learning}
+\begin{frame}{Three Influential Ideas in Offline Reinforcement Learning}
   Complementary approaches to improve behavior cloning:
 
   \vspace{0.35cm}
@@ -18,6 +18,27 @@
   \end{enumerate}
 
   \note{This is the roadmap for the second half. Emphasize that the talk is now organized around ideas, not papers or algorithms.}
+\end{frame}
+
+\begin{frame}{Three Common RL Families}
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{Family} & \textbf{Basic idea} \\
+    \midrule
+    Value-based RL & Learn $Q(s,a)$, act greedily \\
+    Policy gradient & Directly improve $\pi(a \mid s)$ \\
+    Actor-critic & Learn both policy and value \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item Q-learning is conceptually simple, but is most natural when actions are discrete.
+    \item Policy gradients apply more generally, but require expensive rollouts.
+    \item Actor-critic methods combine both ideas: they learn a policy and a value estimate, and work with discrete or continuous actions.
+  \end{itemize}
+  \note{Avoid a DQN/PPO survey. The goal is vocabulary and motivation for critics, actors, and value functions. Position actor-critic methods as a practical compromise: use value estimates for efficiency while retaining a policy representation that works for discrete and continuous actions.}
 \end{frame}
 
 \begin{frame}{Generic Actor-Critic Offline RL}
