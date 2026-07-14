@@ -6,9 +6,9 @@
 
   \vspace{0.4cm}
   \normalsize
-  The risky question is:
+  Many value-based methods rely on maximizing over actions:
   \[
-    \text{What action has the highest predicted value?}
+    \max_a Q(s,a)
   \]
 
   \vspace{0.25cm}
@@ -17,6 +17,29 @@
     \text{What good actions are already supported by the data?}
   \]
   \note{This starts Chapter 3. The conceptual innovation is changing the question, not adding another loss function.}
+\end{frame}
+
+\begin{frame}{IQL: Replace the Max by a Supported Value}
+  \large
+  Many value-based methods ask for the best action through:
+  \[
+    \max_a Q(s,a).
+  \]
+
+  \vspace{0.2cm}
+  IQL instead estimates:
+  \[
+    V(s)
+    \approx
+    \text{high expectile of } Q(s,a)
+    \text{ for logged actions } a.
+  \]
+
+  \vspace{0.25cm}
+  \begin{block}{Intuition}
+    High but supported, instead of highest possible.
+  \end{block}
+  \note{This is the key mathematical contrast for IQL. Do not derive expectile regression; just explain it as a soft high value among actions in the data.}
 \end{frame}
 
 \begin{frame}{Central Idea: Learn Values Inside the Dataset}
@@ -60,6 +83,29 @@
     IQL = better value estimation + the same policy update as AWR.
   \end{block}
   \note{Close the loop back to AWR. IQL should feel like the answer to where the AWR weights come from.}
+\end{frame}
+
+\begin{frame}{IQL Connects Back to AWR}
+  \large
+  IQL changes how the advantage is computed:
+  \[
+    A(s,a)=Q(s,a)-V(s).
+  \]
+
+  \vspace{0.2cm}
+  It does not change the policy update:
+  \[
+    w(s,a)=\exp\!\left(\beta A(s,a)\right),
+    \qquad
+    \min_\theta \sum_i w(s_i,a_i)\,
+    \ell\!\left(\pi_\theta(s_i),a_i\right).
+  \]
+
+  \vspace{0.2cm}
+  \begin{block}{Intuition}
+    IQL gives better weights; the policy update is still weighted behavior cloning.
+  \end{block}
+  \note{This is one of the most important conceptual connections. IQL is not a completely different policy update; it improves the value estimates used by the AWR-style update.}
 \end{frame}
 
 \begin{frame}{Remaining Problem: What Should the Policy Look Like?}

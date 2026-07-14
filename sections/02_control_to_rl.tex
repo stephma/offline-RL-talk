@@ -46,6 +46,31 @@
   \note{This slide conveys the CQL principle visually. Pessimism is a guardrail against unsupported optimism.}
 \end{frame}
 
+\begin{frame}{CQL: Bellman Loss + Conservative Penalty}
+  \large
+  CQL changes the objective for learning $Q$:
+
+  \vspace{0.1cm}
+  \[
+    \mathcal L_{\rm CQL}
+    =
+    \underbrace{\mathcal L_{\rm Bellman}}_{\text{fit observed transitions}}
+    +
+    \alpha
+    \left(
+      \underbrace{\mathbb E_{a\sim\mu} Q(s,a)}_{\text{push down candidate actions}}
+      -
+      \underbrace{\mathbb E_{(s,a)\sim\mathcal D} Q(s,a)}_{\text{keep logged actions high}}
+    \right).
+  \]
+
+  \vspace{0.25cm}
+  \begin{block}{Intuition}
+    Fit the data, but penalize high values for actions not well supported by the data.
+  \end{block}
+  \note{This is schematic, not a derivation. Mu represents candidate actions used to probe unsupported or weakly supported regions. The audience should remember Bellman loss plus conservative penalty.}
+\end{frame}
+
 \begin{frame}{Representative Method: CQL}
   \Large
   Conservative Q-Learning changes the value-learning objective.
@@ -54,14 +79,14 @@
   \normalsize
   Its principle is simple:
   \begin{itemize}
-    \item fit observed transitions in the dataset,
-    \item penalize high values assigned to actions not well supported by the dataset,
-    \item prefer policies whose improvement is backed by evidence.
+    \item fit observed transitions in the dataset;
+    \item penalize high values assigned to actions not well supported by the dataset;
+    \item leave the policy update as a separate step.
   \end{itemize}
 
   \vspace{0.35cm}
   \begin{block}{What to remember}
-    Do not trust unsupported actions.
+    CQL's contribution is conservative value estimation: do not trust unsupported actions.
   \end{block}
 
   \vspace{0.1cm}
@@ -70,22 +95,28 @@
   \note{Avoid the CQL objective. The audience should remember the pessimism principle, not the optimization details.}
 \end{frame}
 
-\begin{frame}{Remaining Problem: Can We Avoid the Risk Entirely?}
+\begin{frame}{Another Design Philosophy: Avoid the Max}
   \Large
-  CQL makes unsupported actions less attractive.
+  Conservative value learning is one way to obtain reliable offline values.
 
   \vspace{0.35cm}
   \normalsize
-  But it still starts from the same danger:
+  Another family asks whether we can avoid unsupported maximization in the first place.
+
+  \vspace{0.25cm}
+  Many value-based methods rely on searching over actions:
 
   \vspace{0.2cm}
   \[
-    \text{searching over actions can expose value errors.}
+    \max_a Q(s,a)
   \]
 
+  \vspace{0.15cm}
+  Offline, this search can expose value errors in weakly supported regions.
+
   \vspace{0.35cm}
-  \begin{block}{Next question}
+  \begin{block}{Alternative question}
     Can we estimate values without maximizing over unsupported actions at all?
   \end{block}
-  \note{This transition motivates IQL. The next idea is not just more pessimism; it avoids the problematic maximization step.}
+  \note{Present IQL as an alternative design philosophy, not as simply a successor to CQL. Conservative value learning and in-sample value learning are two ways to make offline values reliable.}
 \end{frame}

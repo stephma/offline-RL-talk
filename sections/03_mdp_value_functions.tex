@@ -2,7 +2,7 @@
 
 \begin{frame}{Three Big Ideas in Offline Reinforcement Learning}
   \Large
-  How have researchers tried to improve behavior cloning?
+  Complementary approaches to improve behavior cloning:
 
   \vspace{0.35cm}
   \normalsize
@@ -24,6 +24,53 @@
     The algorithms are examples. The three ideas are the structure of the field.
   \end{block}
   \note{This is the roadmap for the second half. Emphasize that the talk is now organized around ideas, not papers or algorithms.}
+\end{frame}
+
+\begin{frame}{Generic Actor-Critic Offline RL}
+  \large
+  Most modern actor-critic Offline RL methods separate learning into two stages:
+
+  \vspace{0.2cm}
+  \normalsize
+  \begin{enumerate}
+    \item Estimate reliable values from logged data.
+    \item Improve the policy using those values.
+  \end{enumerate}
+
+  \vspace{0.2cm}
+  \small
+  \[
+  \begin{aligned}
+    &\text{estimate } Q,V \\
+    &\Downarrow \\
+    &\text{policy improvement}
+  \end{aligned}
+  \]
+
+  \vspace{0.2cm}
+  \normalsize
+  \begin{block}{Key point}
+    Different algorithms mainly differ in how they estimate reliable values.
+  \end{block}
+  \note{This is the conceptual anchor for the second half, but avoid implying that every method uses weighted behavior cloning. The common structure is value estimation followed by policy improvement.}
+\end{frame}
+
+\begin{frame}{Where the Methods Differ}
+  \Large
+  The three ideas intervene at different points.
+
+  \vspace{0.35cm}
+  \normalsize
+  \begin{itemize}
+    \item \textbf{AWR} mainly changes the policy improvement step.
+    \item \textbf{CQL} and \textbf{IQL} focus primarily on value estimation.
+  \end{itemize}
+
+  \vspace{0.35cm}
+  \begin{block}{Organizing distinction}
+    Policy updates need values; Offline RL methods differ in how those values are made reliable.
+  \end{block}
+  \note{This slide prevents overgeneralization. AWR is a policy-improvement method. CQL and IQL are primarily value-estimation philosophies.}
 \end{frame}
 
 \section{Idea 1: Reweight the Logged Data}
@@ -74,6 +121,31 @@
   \note{This visual should make the idea memorable: AWR does not abandon BC; it changes the effective sampling frequency of each data point.}
 \end{frame}
 
+\begin{frame}{AWR: Weighted Behavior Cloning}
+  \large
+  Behavior cloning solves:
+  \[
+    \min_\theta \sum_i \ell\!\left(\pi_\theta(s_i),a_i\right)
+  \]
+
+  \vspace{0.15cm}
+  AWR changes exactly one thing:
+  \[
+    \min_\theta
+    \sum_i
+    \textcolor{red}{w(s_i,a_i)}
+    \,\ell\!\left(\pi_\theta(s_i),a_i\right),
+    \qquad
+    \textcolor{red}{w(s,a)=\exp\!\left(\beta A(s,a)\right)}.
+  \]
+
+  \vspace{0.25cm}
+  \begin{block}{Intuition}
+    Everything else is still supervised learning; high-advantage examples simply count more.
+  \end{block}
+  \note{This is the key equation for AWR. The red term is the only structural change from behavior cloning.}
+\end{frame}
+
 \begin{frame}{Representative Method: AWR}
   \Large
   Advantage-Weighted Regression assigns a weight to each logged decision.
@@ -100,15 +172,21 @@
 
 \begin{frame}{Remaining Problem: Where Do the Weights Come From?}
   \Large
-  Reweighting is only as good as the value estimates behind the weights.
+  AWR assumes reliable value estimates.
 
-  \vspace{0.4cm}
+  \vspace{0.25cm}
   \normalsize
-  If the value model is unreliable, the weights become unreliable too.
+  Its weights depend on advantage:
+  \[
+    A(s,a)=Q(s,a)-V(s).
+  \]
+
+  \vspace{0.15cm}
+  If $Q$ or $V$ is unreliable, the weights become unreliable too.
 
   \vspace{0.35cm}
   \begin{block}{Next question}
-    How can we estimate values safely from a fixed offline dataset?
+    How should we estimate values offline?
   \end{block}
   \note{This transition leads directly to conservative value learning.}
 \end{frame}

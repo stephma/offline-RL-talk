@@ -276,40 +276,40 @@
   \note{Make Bellman thinking less abrupt. The important idea is that long-term value can be written recursively as immediate reward plus discounted future value. Mention dynamic programming as the classical way to solve such equations, but do not develop the details here.}
 \end{frame}
 
-\begin{frame}{Using Advantage to Weight Data}
-  \large
-  Advantage scores a logged action relative to what is typical in the same state:
-
-  \[
-    A(s,a) = Q(s,a) - V(s)
-  \]
-
-  \vspace{0.05cm}
-  \normalsize
-  Convert advantage into a training weight:
-  \[
-  \begin{aligned}
-    \text{advantage weight:}\quad
-    &\textcolor{red}{w(s,a) = \exp\!\left(\beta A(s,a)\right)},
-    \qquad \textcolor{red}{\beta > 0} \\
-    \text{advantage-weighted BC:}\quad
-    &\min_\theta
-      \sum_{(s_i,a_i)\in\mathcal{D}}
-      \textcolor{red}{w(s_i,a_i)}\,
-      \left\|\pi_\theta(s_i)-a_i\right\|^2
-  \end{aligned}
-  \]
-
-  \vspace{-0.35cm}
-  \small
-  \begin{itemize}
-    \item positive advantage $\rightarrow$ larger weight $\rightarrow$ state/action pair is enhanced in importance
-    \item negative advantage $\rightarrow$ smaller weight $\rightarrow$ state/action pair is reduced in importance
-  \end{itemize}
-
-  \vspace{-0.05cm}
-  \begin{block}{Simplest offline RL idea}
-    Count ``good'' data points multiple times, and ``bad'' data points only as a fraction.
-  \end{block}
-  \note{This slide introduces advantage as a way to turn long-term value predictions into supervised-learning weights. First define the advantage, then immediately map it to an exponential weight. Positive advantages create larger weights and therefore emphasize the corresponding state-action pairs; negative advantages create smaller weights and deemphasize them. Defer value estimation until later algorithms.}
-\end{frame}
+% \begin{frame}{Using Advantage to Weight Data}
+%   \large
+%   Advantage scores a logged action relative to what is typical in the same state:
+%
+%   \[
+%     A(s,a) = Q(s,a) - V(s)
+%   \]
+%
+%   \vspace{0.05cm}
+%   \normalsize
+%   Convert advantage into a training weight:
+%   \[
+%   \begin{aligned}
+%     \text{advantage weight:}\quad
+%     &\textcolor{red}{w(s,a) = \exp\!\left(\beta A(s,a)\right)},
+%     \qquad \textcolor{red}{\beta > 0} \\
+%     \text{advantage-weighted BC:}\quad
+%     &\min_\theta
+%       \sum_{(s_i,a_i)\in\mathcal{D}}
+%       \textcolor{red}{w(s_i,a_i)}\,
+%       \left\|\pi_\theta(s_i)-a_i\right\|^2
+%   \end{aligned}
+%   \]
+%
+%   \vspace{-0.35cm}
+%   \small
+%   \begin{itemize}
+%     \item positive advantage $\rightarrow$ larger weight $\rightarrow$ state/action pair is enhanced in importance
+%     \item negative advantage $\rightarrow$ smaller weight $\rightarrow$ state/action pair is reduced in importance
+%   \end{itemize}
+%
+%   \vspace{-0.05cm}
+%   \begin{block}{Simplest offline RL idea}
+%     Count ``good'' data points multiple times, and ``bad'' data points only as a fraction.
+%   \end{block}
+%   \note{This slide introduces advantage as a way to turn long-term value predictions into supervised-learning weights. First define the advantage, then immediately map it to an exponential weight. Positive advantages create larger weights and therefore emphasize the corresponding state-action pairs; negative advantages create smaller weights and deemphasize them. Defer value estimation until later algorithms.}
+% \end{frame}

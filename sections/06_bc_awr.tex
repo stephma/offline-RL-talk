@@ -1,30 +1,34 @@
 \section{Summary}
 
-\begin{frame}{Summary: Three Ideas, Three Representatives}
-  \small
+\begin{frame}{Summary: What Changes Across Methods?}
+  \scriptsize
   \centering
-  \renewcommand{\arraystretch}{1.25}
-  \begin{tabular}{@{}p{0.39\textwidth}p{0.29\textwidth}p{0.19\textwidth}@{}}
+  \renewcommand{\arraystretch}{1.35}
+  \begin{tabular}{@{}p{0.16\textwidth}p{0.49\textwidth}p{0.25\textwidth}@{}}
     \toprule
-    \textbf{Problem} & \textbf{Core idea} & \shortstack[l]{\textbf{Representative}\\\textbf{algorithm}} \\
+    \textbf{Method} & \textbf{Main contribution} & \textbf{Role} \\
     \midrule
-    Not all demonstrations are equally useful
-    & Reweight data
-    & AWR \\
+    AWR
+    & Advantage-weighted policy improvement
+    & Policy update \\
     \addlinespace
-    Values are unreliable outside the data
-    & Conservative value learning
-    & CQL \\
+    CQL
+    & Conservative value estimation
+    & Value learning \\
     \addlinespace
-    Avoid unsupported maximization
-    & In-sample value learning
-    & IQL \\
+    IQL
+    & In-sample value estimation
+    & Value learning \\
     \bottomrule
   \end{tabular}
 
   \vspace{0.55cm}
+  \normalsize
   \begin{block}{Main message}
-    Modern Offline RL is largely about obtaining reliable value estimates from fixed logged data.
+    Modern Offline RL largely consists of estimating reliable values from logged data, then improving the policy using those values.
   \end{block}
+  \vspace{0.1cm}
+  \small
+  Different methods primarily differ in how reliable values are obtained, not in the overall objective.
   \note{End by returning to the three ideas. Mention IDQL only if needed as a complementary policy-representation extension.}
 \end{frame}
