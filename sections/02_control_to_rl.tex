@@ -54,27 +54,3 @@
   \end{block}
   \note{This slide combines the CQL picture with the schematic objective. Mu represents candidate actions used to probe unsupported or weakly supported regions. The audience should remember: Bellman loss plus conservative penalty.}
 \end{frame}
-
-\begin{frame}{Another Design Philosophy: Avoid the Max}
-  Conservative value learning is one way to obtain reliable offline values.
-
-  \vspace{0.35cm}
-  Another family asks whether we can avoid unsupported maximization in the first place.
-
-  \vspace{0.25cm}
-  Many value-based methods rely on searching over actions:
-
-  \vspace{0.2cm}
-  \[
-    \max_a Q(s,a)
-  \]
-
-  \vspace{0.15cm}
-  Offline, this search can expose value errors in weakly supported regions.
-
-  \vspace{0.35cm}
-  \begin{block}{Alternative question}
-    Can we estimate values without maximizing over unsupported actions at all?
-  \end{block}
-  \note{Present IQL as an alternative design philosophy, not as simply a successor to CQL. Conservative value learning and in-sample value learning are two ways to make offline values reliable.}
-\end{frame}

@@ -6,7 +6,7 @@
   \vspace{0.12cm}
   Historical demonstrations come from a \alert{behavior policy} $\pi_b$, e.g. human terminal operators:
   \[
-    \dataset = \{(s_t,a_t)\},
+    \dataset = \{(s_i,a_i)\}_{i=1}^N,
     \qquad
     a_t \sim \pi_b(a\mid s_t)
   \]
@@ -19,8 +19,8 @@
       {\small steering angle, conveyor speed}
       \[
         \min_\theta\
-        \mathbb E_{\dataset}
-        \left[\|a-\pi_\theta(s)\|^2\right]
+        \sum_{i\in\dataset}
+        \left\|a_i-\pi_\theta(s_i)\right\|^2
       \]
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -28,8 +28,8 @@
       {\small route choice, silo assignment}
       \[
         \min_\theta\
-        -\mathbb E_{\dataset}
-        \left[\log \pi_\theta(a\mid s)\right]
+        -\sum_{i\in\dataset}
+        \log \pi_\theta(a_i\mid s_i)
       \]
     \end{column}
   \end{columns}

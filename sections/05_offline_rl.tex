@@ -1,41 +1,28 @@
-\section{Policy Representation}
+\section{Outlook}
 
-\begin{frame}{Complementary Issue: Several Good Actions}
-  \centering
-  \begin{tikzpicture}[x=1cm,y=1cm]
-    \draw[->,thick] (0,0) -- (10,0) node[right] {action};
-    \fill[SignalGreen] (2.4,0) circle (5pt);
-    \fill[SignalGreen] (7.2,0) circle (5pt);
-    \fill[WarmGold] (4.8,0) circle (5pt);
-    \node[above] at (2.4,0.15) {good};
-    \node[above] at (7.2,0.15) {good};
-    \node[below] at (4.8,-0.15) {bad average};
-  \end{tikzpicture}
-
-  \vspace{0.55cm}
-  The first three ideas focused on value estimation.
+\begin{frame}{What We Could Cover Next}
+  This tutorial focused on one branch: model-free Offline RL.
 
   \vspace{0.25cm}
-  IDQL addresses a different issue: representing policies when several actions are equally good.
-  \note{Say explicitly that this is complementary, not a fourth offline RL principle.}
-\end{frame}
+  Other major directions:
+  \begin{itemize}
+    \item \textbf{Model-Based RL:} Can we learn a model and plan with it? \\
+    World models, imagined rollouts. Examples: Dreamer, TD-MPC, MBPO.
 
-\begin{frame}{Diffusion Policies Represent Richer Action Distributions}
-  \centering
-  \begin{tikzpicture}[node distance=0.75cm,>=Latex]
-    \node[draw,rounded corners,fill=Panel,minimum width=2.2cm] (noise) {noise};
-    \node[draw,rounded corners,fill=Panel,right=of noise,minimum width=2.2cm] (step1) {denoise};
-    \node[draw,rounded corners,fill=Panel,right=of step1,minimum width=2.2cm] (step2) {denoise};
-    \node[draw,rounded corners,fill=Panel,right=of step2,minimum width=2.2cm] (action) {action};
-    \draw[->,thick] (noise) -- (step1);
-    \draw[->,thick] (step1) -- (step2);
-    \draw[->,thick] (step2) -- (action);
-  \end{tikzpicture}
+    \vspace{0.16cm}
+    \item \textbf{Foundation Models for Robotics:} Can one policy solve many tasks? \\
+    Large-scale imitation and vision-language-action models. Examples: RT-1, RT-2, OpenVLA, $\pi_0$.
 
-  \vspace{0.55cm}
-  A diffusion policy can sample several plausible actions for the same state.
+    \vspace{0.16cm}
+    \item \textbf{Sequence Modeling:} Can we replace Bellman updates with sequence modeling? \\
+    Trajectories as sequences, Transformer policies. Examples: Decision Transformer, Trajectory Transformer.
 
-  \vspace{0.25cm}
-  IDQL combines IQL-style value learning with diffusion-based policy extraction.
-  \note{Keep this short. The endpoint is that richer actors can represent multimodal action choices while the values still guide improvement.}
+    \vspace{0.16cm}
+    \item \textbf{Offline-to-Online Adaptation:} How do we keep improving after deployment? \\
+    Start from logged data, then fine-tune with limited online interaction.
+  \end{itemize}
+
+  \vspace{0.15cm}
+  \textbf{Outlook:} Offline RL is increasingly one component of larger data-driven decision-making systems.
+  \note{This outlook deliberately points beyond the model-free offline RL branch covered in the tutorial. Keep it conceptual and avoid turning it into a survey.}
 \end{frame}

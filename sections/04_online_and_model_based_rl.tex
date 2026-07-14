@@ -30,36 +30,26 @@
     V(s)
     \approx
     \text{upper expectile of } Q(s,a)
-    \quad \text{for logged actions } a.
+    \quad \textcolor{red}{\text{for logged actions } a}.
   \]
 
   \vspace{0.1cm}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.44\textwidth}
-      \begin{itemize}
-        \item mean: average action
-        \item maximum: possibly unsupported action
-        \item upper expectile: high but supported action
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-      \centering
-      \begin{tikzpicture}[>=Latex,x=0.78cm,y=0.58cm]
-        \draw[->,thick] (0,0) -- (7.7,0) node[right] {action};
-        \foreach \x/\h in {0.8/0.9,1.5/1.8,2.3/1.3,3.1/2.5,4.0/2.1,4.8/1.5} {
-          \draw[fill=Panel] (\x-0.11,0) rectangle (\x+0.11,\h);
-        }
-        \node[above] at (2.8,2.85) {logged actions};
-        \draw[SignalGreen,ultra thick] (0.55,2.25) -- (5.05,2.25);
-        \node[right] at (5.1,2.25) {$V(s)$};
-        \node[right,text=SignalGreen] at (5.1,1.75) {high supported value};
-        \draw[WarmGold,dashed,thick] (6.45,0) -- (6.45,3.05);
-        \node[above] at (6.45,3.05) {unsupported};
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
+  \centering
+  \begin{tikzpicture}[>=Latex,x=0.98cm,y=0.62cm]
+    \draw[->,thick] (0,0) -- (7.7,0) node[right] {action};
+    \foreach \x/\h in {0.8/0.9,1.5/1.8,2.3/1.3,3.1/2.5,4.0/2.1,4.8/1.5} {
+      \draw[fill=Panel] (\x-0.11,0) rectangle (\x+0.11,\h);
+    }
+    \node[above] at (2.8,2.85) {logged actions};
+    \draw[SignalGreen,ultra thick] (0.55,2.25) -- (5.05,2.25);
+    \node[right] at (5.1,2.25) {$V(s)$};
+    \node[right,text=SignalGreen] at (5.1,1.75) {high supported value};
+    \draw[WarmGold,dashed,thick] (6.45,0) -- (6.45,3.05);
+    \node[above] at (6.45,3.05) {unsupported};
+  \end{tikzpicture}
 
   \vspace{0.15cm}
+  \raggedright
   Expectile regression is the tool used to estimate this high supported value.
 
   \vspace{0.05cm}
